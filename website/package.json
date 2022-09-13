@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "npm install && npx elm-live --path-to-elm=./node_modules/.bin/elm --dir=public src/Main.elm -- --output=public/dist/elm.compiled.js"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-5",
+    "elm-live": "^4.0.2"
+  }
+}
