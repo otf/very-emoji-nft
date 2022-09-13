@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "npm install && npx hardhat node"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@openzeppelin/contracts": "^4.7.3",
