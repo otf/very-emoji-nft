@@ -1,0 +1,24 @@
+{
+  "name": "very-emoji-nft",
+  "version": "1.0.0",
+  "description": "This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.",
+  "main": "index.js",
+  "dependencies": {
+    "playwright-core": "^1.25.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.25.2"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oikonomika/very-emoji-nft.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oikonomika/very-emoji-nft/issues"
+  },
+  "homepage": "https://github.com/oikonomika/very-emoji-nft#readme"
+}
