@@ -13,6 +13,7 @@ main =
       [ el 
           [ centerX
           , centerY
+          , Region.heading 1
           ]
           <|
           text "Hello Elm" 
