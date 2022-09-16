@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Element exposing (..)
 import Element.Region as Region
+import Element.Input as Input
 import Html exposing (Html)
 
 logo : Element msg
@@ -22,6 +23,11 @@ header =
     , spacing 20
     ]
     [ logo
+    , Input.button
+        [
+          alignRight
+        ]
+        { label = text "CONNECT WALLET", onPress = Nothing }
     ]
 
 content : Element msg
