@@ -16,6 +16,6 @@ main =
           , Region.heading 1
           ]
           <|
-          text "Hello Elm" 
+          text "Very Emoji" 
       ]
       

@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('web has h1', async ({ page }) => {
+test('web has logo', async ({ page }) => {
   await page.goto('http://localhost:8000/');
 
   const h1 = page.locator('h1');
 
-  await expect(h1).toHaveText('Hello Elm');
+  await expect(h1).toHaveText('Very Emoji');
 });
