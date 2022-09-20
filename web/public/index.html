@@ -7,10 +7,27 @@
 </head>
 <body>
   <div id="app"></div>
-  <script>
-    const app = Elm.Main.init({
-      node: document.getElementById('app')
-    });
+  <script type="module">
+    import { txSentry, walletSentry } from './elm-ethereum-ports.js';
+
+    if (typeof window.ethereum !== 'undefined') {
+        const networkId = ethereum.chainId;
+        const app = Elm.Main.init({
+          flags: parseInt(networkId),
+          node: document.getElementById('app')
+        });
+        txSentry(app.ports.txOut, app.ports.txIn, ethereum);
+        walletSentry(app.ports.walletSentry, ethereum);
+        app.ports.connectWallet.subscribe(function (){
+          ethereum.request({ method: 'eth_requestAccounts' });
+        });
+    } else {
+      console.warn("Metamask not detected.");
+      const app = Elm.Main.init({
+        flags: -1,
+        node: document.getElementById('app')
+      });
+    }
   </script>
 </body>
 </html>
