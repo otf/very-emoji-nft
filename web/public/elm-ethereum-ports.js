@@ -1,14 +1,17 @@
 'use strict';
 
 // Tx Sentry - Send and listen to transactions form elm to web3 provider
-function txSentry(fromElm, toElm, web3) {
+export function txSentry(fromElm, toElm, web3) {
     checkFromElmPort(fromElm);
     checkToElmPort(toElm);
     checkWeb3(web3);
 
     fromElm.subscribe(function (txData) {
         try {
-            web3.eth.sendTransaction(txData.txParams, function (e, r) {
+            web3.request({
+              method: 'eth_sendTransaction',
+              params: txData.txParams
+            }).then(function (e, r) {
                 toElm.send({ ref: txData.ref, txHash: r || e });
             });
         } catch (error) {
@@ -19,7 +22,7 @@ function txSentry(fromElm, toElm, web3) {
 }
 
 // Wallet Sentry - listen to account and network changes
-function walletSentry(toElm, web3) {
+export function walletSentry(toElm, web3) {
     checkToElmPort(toElm);
     checkWeb3(web3);
     var model = { account: null, networkId: 0 };
@@ -29,13 +32,9 @@ function walletSentry(toElm, web3) {
 
 // Helper function that calls out to web3 for account/network
 function getNetworkAndAccount(web3, callback) {
-    web3.version.getNetwork(function(netError, networkId) {
-        web3.eth.getAccounts(function (accountError, accounts) {
-            if (netError) { console.log("web3.version.getNetwork Error: ", netError);}
-            if (accountError) { console.log("web3.eth.getAccounts Error: ", accountError)}
-            callback( {account: accounts[0], networkId: parseInt(networkId)} );
-        });
-    });
+    const networkId = web3.chainId;
+    const account = web3.selectedAddress;
+    callback( {account: account, networkId: parseInt(networkId)} );
 }
 
 // Updates model and sends to Elm if anything has changed. Curried to make callback easier.
@@ -63,10 +62,7 @@ function checkFromElmPort(port) {
 }
 
 function checkWeb3(web3) {
-    if (typeof web3 === 'undefined' || typeof web3.version === 'undefined' || typeof web3.eth === 'undefined') {
-        console.warn('elm-ethereum-ports: web3 object is undefined, or web3.version or web3.eth is missing')
+    if (typeof window.ethereum === 'undefined' && ethereum.isConnected()) {
+        console.warn('elm-ethereum-ports: ethereum object is undefined, or ethereum.isConnected() is false')
     }
 }
-
-exports.txSentry = txSentry;
-exports.walletSentry = walletSentry;
