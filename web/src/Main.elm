@@ -83,7 +83,7 @@ update msg model =
                 message =
                     case walletSentry_.account of
                         Just _ ->
-                            "Your wallet is connected."
+                            ""
 
                         Nothing ->
                             "Please connect your wallet."
@@ -141,14 +141,30 @@ header { walletAddress } =
         , Input.button
             [ alignRight
             ]
-            { label = text connectWalletText, onPress = Just ConnectWallet }
+            { label = text connectWalletText
+            , onPress = Just ConnectWallet
+            }
         ]
 
 
 content : Model -> Element msg
-content { message } =
-    column [ width fill ]
-        [ text message
+content { walletAddress, message } =
+    let
+        mintFrame =
+            case walletAddress of
+                Just _ ->
+                    Input.button
+                        [ centerX
+                        ]
+                        { label = text "Mint", onPress = Nothing }
+
+                Nothing ->
+                    text message
+    in
+    column
+        [ centerX
+        ]
+        [ mintFrame
         ]
 
 
