@@ -25,26 +25,19 @@ export function txSentry(fromElm, toElm, web3) {
 export function walletSentry(toElm, web3) {
     checkToElmPort(toElm);
     checkWeb3(web3);
-    var model = { account: null, networkId: 0 };
-    getNetworkAndAccount(web3, sendModelToElm(toElm, model)) // Make initial call for data.
-    setInterval(function () { getNetworkAndAccount(web3, sendModelToElm(toElm, model)) }, 500); // Repeat on half second interval.
+    attachChainChanged(web3, toElm);
 }
 
 // Helper function that calls out to web3 for account/network
-function getNetworkAndAccount(web3, callback) {
-    const networkId = web3.chainId;
-    const account = web3.selectedAddress;
-    callback( {account: account, networkId: parseInt(networkId)} );
-}
-
-// Updates model and sends to Elm if anything has changed. Curried to make callback easier.
-function sendModelToElm(toElm, globalModel) {
-    return function (newModel) {
-        if (newModel.account !== globalModel.account || newModel.networkId !== globalModel.networkId) {
-            globalModel = newModel;
-            toElm.send(globalModel);
-        }
+function attachChainChanged(web3, toElm) {
+    var handleChanged = function () {
+        toElm.send( {account: web3.selectedAddress, networkId: parseInt(web3.chainId)} );
     }
+
+    handleChanged(); // Make initial call for data.
+
+    web3.on('chainChanged', handleChanged);
+    web3.on('accountsChanged', handleChanged);
 }
 
 // Logging Helpers
