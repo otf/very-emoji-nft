@@ -14,7 +14,7 @@ module Contracts.VeryEmoji exposing
     , name
     , ownerOf
     , safeTransferFrom
-    , safeTransferFrom
+    , safeTransferFromWithData
     , setApprovalForAll
     , supportsInterface
     , symbol
@@ -168,11 +168,11 @@ safeTransferFrom contractAddress from_ to_ tokenId_ =
     }
 
 
--- safeTransferFrom(address,address,uint256,bytes) function
+-- safeTransferFromWithData(address,address,uint256,bytes) function
 
 
-safeTransferFrom : Address -> Address -> Address -> BigInt -> Hex -> Call ()
-safeTransferFrom contractAddress from_ to_ tokenId_ data_ =
+safeTransferFromWithData : Address -> Address -> Address -> BigInt -> Hex -> Call ()
+safeTransferFromWithData contractAddress from_ to_ tokenId_ data_ =
     { to = Just contractAddress
     , from = Nothing
     , gas = Nothing
