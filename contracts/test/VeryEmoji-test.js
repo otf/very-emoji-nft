@@ -31,5 +31,11 @@ describe("VeryEmoji contract", function () {
 
       expect(await token721.balanceOf(address1)).to.equal(2);      
     });
+
+    it("Should have a tokenURI", async function () {
+      expect(await token721.tokenURI(1)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/1.json");
+      expect(await token721.tokenURI(2)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/2.json");
+    });
+
   });
 });
