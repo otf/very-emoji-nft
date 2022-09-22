@@ -10,7 +10,7 @@ module Contracts.VeryEmoji exposing
     , balanceOf
     , getApproved
     , isApprovedForAll
-    , mintTo
+    , mint
     , name
     , ownerOf
     , safeTransferFrom
@@ -104,17 +104,17 @@ isApprovedForAll contractAddress owner_ operator_ =
     }
 
 
--- mintTo(address) function
+-- mint(uint256) function
 
 
-mintTo : Address -> Address -> Call ()
-mintTo contractAddress to_ =
+mint : Address -> BigInt -> Call ()
+mint contractAddress tokenId_ =
     { to = Just contractAddress
     , from = Nothing
     , gas = Nothing
     , gasPrice = Nothing
     , value = Nothing
-    , data = Just <| E.functionCall "755edd17" [ E.address to_ ]
+    , data = Just <| E.functionCall "a0712d68" [ E.uint tokenId_ ]
     , nonce = Nothing
     , decoder = Decode.succeed ()
     }

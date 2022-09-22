@@ -1,7 +1,8 @@
 port module Main exposing (..)
 
+import BigInt exposing (BigInt)
 import Browser
-import Contracts.VeryEmoji as VeryEmoji exposing (mintTo)
+import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
 import Element.Region as Region
@@ -75,9 +76,9 @@ init networkId =
     )
 
 
-mint : HttpProvider -> Address -> Address -> Cmd Msg
-mint provider contract wallet =
-    VeryEmoji.mintTo contract wallet
+mint : HttpProvider -> Address -> BigInt -> Cmd Msg
+mint provider contract tokenId =
+    VeryEmoji.mint contract tokenId
         |> Eth.toSend
         |> Eth.sendTx provider
         |> Task.attempt GotMint
@@ -101,15 +102,12 @@ update msg model =
                 contractAddress =
                     EthUtils.toAddress model.inputContractAddress
             in
-            case ( contractAddress, model.walletAddress ) of
-                ( Ok contractAddr, Just walletAddr ) ->
-                    ( model, mint model.provider contractAddr walletAddr )
+            case contractAddress of
+                Ok contractAddr ->
+                    ( model, mint model.provider contractAddr (BigInt.fromInt 1) )
 
-                ( Err message, Just _ ) ->
+                Err message ->
                     ( { model | message = message }, Cmd.none )
-
-                _ ->
-                    ( { model | message = "Contract and wallet addresses are invalid." }, Cmd.none )
 
         GotContractAddress strContractAddress ->
             ( { model | inputContractAddress = strContractAddress }, Cmd.none )
