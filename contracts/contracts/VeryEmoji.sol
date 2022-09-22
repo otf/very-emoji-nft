@@ -11,12 +11,11 @@ contract VeryEmoji is ERC721 {
     }
 
     /**
-     * @dev Mints a token to an address with a _tokenId.
-     * @param _to address of the future owner of the token
+     * @dev Mints a token to msg.sender
      * @param _tokenId of the token
      */
-    function mint(address _to, uint256 _tokenId) public {
-        _mint(_to, _tokenId);
+    function mint(uint256 _tokenId) public {
+        _mint(msg.sender, _tokenId);
     }
 
     /**
