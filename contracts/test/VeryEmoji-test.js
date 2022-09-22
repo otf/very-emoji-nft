@@ -23,10 +23,10 @@ describe("VeryEmoji contract", function () {
 
     it("Should mint a token with token ID 1 & 2 to account1", async function () {
       const address1=account1.address;
-      await token721.mintTo(address1);
+      await token721.mint(address1, 1);
       expect(await token721.ownerOf(1)).to.equal(address1);
 
-      await token721.mintTo(address1);
+      await token721.mint(address1, 2);
       expect(await token721.ownerOf(2)).to.equal(address1);
 
       expect(await token721.balanceOf(address1)).to.equal(2);      
