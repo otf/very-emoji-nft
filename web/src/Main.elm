@@ -45,16 +45,21 @@ type alias Model =
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
     , provider : HttpProvider
+    , totalSupply : Maybe BigInt
+    , maxSupply : Maybe BigInt
     }
 
 
 type Msg
     = TxSentryMsg TxSentry.Msg
     | ConnectWallet
+    | FetchContract
     | Mint
     | GotContractAddress String
     | GotMint (Result Http.Error TxHash)
     | GotWalletStatus WalletSentry
+    | GotTotalSupply (Result Http.Error BigInt)
+    | GotMaxSupply (Result Http.Error BigInt)
     | GotFail String
 
 
@@ -71,6 +76,8 @@ init networkId =
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
+      , totalSupply = Nothing
+      , maxSupply = Nothing
       }
     , Cmd.none
     )
@@ -89,6 +96,20 @@ imageUrl tokenId =
     "http://localhost:8080/ipfs/QmU8iCM7QYECrWtWjKUN6QZcu6Z4Se9gM1CjDtsUAVc4AX/" ++ BigInt.toString tokenId ++ ".svg"
 
 
+callTotalSupply : HttpProvider -> Address -> Cmd Msg
+callTotalSupply provider contract =
+    VeryEmoji.totalSupply contract
+        |> Eth.call provider
+        |> Task.attempt GotTotalSupply
+
+
+callMaxSupply : HttpProvider -> Address -> Cmd Msg
+callMaxSupply provider contract =
+    VeryEmoji.maxSupply contract
+        |> Eth.call provider
+        |> Task.attempt GotMaxSupply
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -102,23 +123,56 @@ update msg model =
         ConnectWallet ->
             ( model, connectWallet () )
 
-        Mint ->
+        FetchContract ->
             let
                 contractAddress =
                     EthUtils.toAddress model.inputContractAddress
             in
             case contractAddress of
                 Ok contractAddr ->
-                    ( model, mint model.provider contractAddr (BigInt.fromInt 1) )
+                    ( model
+                    , Cmd.batch
+                        [ callTotalSupply model.provider contractAddr
+                        , callMaxSupply model.provider contractAddr
+                        ]
+                    )
 
                 Err message ->
+                    ( { model | message = message }, Cmd.none )
+
+        Mint ->
+            let
+                contractAddress =
+                    EthUtils.toAddress model.inputContractAddress
+            in
+            case ( contractAddress, model.totalSupply ) of
+                ( Ok contractAddr, Just totalSupply ) ->
+                    ( model, mint model.provider contractAddr (BigInt.add totalSupply (BigInt.fromInt 1)) )
+
+                ( Ok contractAddr, Nothing ) ->
+                    ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+
+                ( Err message, _ ) ->
                     ( { model | message = message }, Cmd.none )
 
         GotContractAddress strContractAddress ->
             ( { model | inputContractAddress = strContractAddress }, Cmd.none )
 
         GotMint (Ok txHash) ->
-            ( { model | message = "You got a NFT!: " ++ EthUtils.txHashToString txHash }, Cmd.none )
+            let
+                contractAddress =
+                    EthUtils.toAddress model.inputContractAddress
+            in
+            case contractAddress of
+                Ok contractAddr ->
+                    ( { model
+                        | message = "You got a NFT!: " ++ EthUtils.txHashToString txHash
+                      }
+                    , callTotalSupply model.provider contractAddr
+                    )
+
+                Err message ->
+                    ( { model | message = message }, Cmd.none )
 
         GotMint (Err _) ->
             ( { model | message = "Minting error has occured." }, Cmd.none )
@@ -140,6 +194,18 @@ update msg model =
               }
             , Cmd.none
             )
+
+        GotTotalSupply (Ok totalSupply) ->
+            ( { model | totalSupply = Just totalSupply }, Cmd.none )
+
+        GotTotalSupply (Err _) ->
+            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+
+        GotMaxSupply (Ok maxSupply) ->
+            ( { model | maxSupply = Just maxSupply }, Cmd.none )
+
+        GotMaxSupply (Err _) ->
+            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
 
         GotFail message ->
             ( { model | message = message }, Cmd.none )
@@ -195,44 +261,85 @@ header { walletAddress } =
         ]
 
 
-content : Model -> Element Msg
-content { inputContractAddress, walletAddress, message } =
+viewIpfsImage : BigInt -> Element msg
+viewIpfsImage totalSupply =
+    image
+        [ centerX
+        ]
+        { src = imageUrl totalSupply
+        , description = "Very Emoji NFT"
+        }
+
+
+viewSupply : BigInt -> BigInt -> Element msg
+viewSupply totalSupply maxSupply =
+    el
+        [ centerX
+        ]
+    <|
+        text <|
+            BigInt.toString totalSupply
+                ++ "/"
+                ++ BigInt.toString maxSupply
+
+
+viewNft : Model -> Element Msg
+viewNft model =
     let
+        mintButton =
+            Input.button
+                [ centerX ]
+                { label = text "Mint", onPress = Just Mint }
+
         contractAddressInput =
             Input.text
                 [ centerX
                 ]
                 { onChange = GotContractAddress
-                , text = inputContractAddress
+                , text = model.inputContractAddress
                 , placeholder = Nothing
                 , label = Input.labelLeft [] <| text "Contract Address: "
                 }
 
-        mintFrame =
-            case walletAddress of
-                Just _ ->
-                    Input.button
-                        [ centerX
-                        ]
-                        { label = text "Mint", onPress = Just Mint }
-
-                Nothing ->
-                    Element.none
-
-        nftFrame =
-            image
-                [ centerX
-                ]
-                { src = imageUrl (BigInt.fromInt 1)
-                , description = "Very Emoji NFT"
-                }
+        fetchContractButton =
+            Input.button
+                [ centerX ]
+                { label = text "Fetch the contract", onPress = Just FetchContract }
     in
+    case ( model.walletAddress, model.totalSupply, model.maxSupply ) of
+        ( Just _, Just total, Just max ) ->
+            let
+                nextTokenId =
+                    BigInt.add total (BigInt.fromInt 1)
+            in
+            if BigInt.lt total max then
+                column
+                    [ centerX ]
+                    [ viewIpfsImage nextTokenId
+                    , viewSupply nextTokenId max
+                    , mintButton
+                    ]
+
+            else
+                text "All NFTs are minted."
+
+        ( Just _, _, _ ) ->
+            column
+                [ centerX ]
+                [ contractAddressInput
+                , fetchContractButton
+                ]
+
+        _ ->
+            Element.none
+
+
+content : Model -> Element Msg
+content ({ inputContractAddress, walletAddress, message } as model) =
     column
         [ centerX
         ]
-        [ contractAddressInput
-        , nftFrame
-        , mintFrame
+        [ viewNft model
         , text message
         ]
 
