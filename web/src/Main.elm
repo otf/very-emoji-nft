@@ -6,12 +6,12 @@ import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
 import Element.Region as Region
-import Eth as Eth exposing (sendTx, toSend)
-import Eth.Net as Net exposing (NetworkId(..), toNetworkId)
+import Eth as Eth
+import Eth.Net as Net exposing (NetworkId(..))
 import Eth.Sentry.Tx as TxSentry exposing (TxSentry)
 import Eth.Sentry.Wallet as WalletSentry exposing (WalletSentry)
 import Eth.Types exposing (..)
-import Eth.Utils as EthUtils exposing (toAddress, txHashToString)
+import Eth.Utils as EthUtils
 import Html exposing (Html)
 import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
