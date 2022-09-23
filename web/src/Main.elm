@@ -84,6 +84,11 @@ mint provider contract tokenId =
         |> Task.attempt GotMint
 
 
+imageUrl : BigInt -> String
+imageUrl tokenId =
+    "http://localhost:8080/ipfs/QmU8iCM7QYECrWtWjKUN6QZcu6Z4Se9gM1CjDtsUAVc4AX/" ++ BigInt.toString tokenId ++ ".svg"
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -213,11 +218,20 @@ content { inputContractAddress, walletAddress, message } =
 
                 Nothing ->
                     Element.none
+
+        nftFrame =
+            image
+                [ centerX
+                ]
+                { src = imageUrl (BigInt.fromInt 1)
+                , description = "Very Emoji NFT"
+                }
     in
     column
         [ centerX
         ]
         [ contractAddressInput
+        , nftFrame
         , mintFrame
         , text message
         ]
