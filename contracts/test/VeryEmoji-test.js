@@ -37,5 +37,26 @@ describe("VeryEmoji contract", function () {
       expect(await token721.tokenURI(2)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/2.json");
     });
 
+    it("Should be able to mint until the maxSupply", async function () {
+      const address1 = account1.address;
+      const maxSupply = await token721.maxSupply();
+
+      for (i = 1; i <= maxSupply; i++) {
+        await token721.connect(account1).mint(i);
+      }
+
+      expect(await token721.balanceOf(address1)).to.equal(maxSupply);
+    });
+
+    it("Should be reject minting more than the maxSupply", async function () {
+      const address1 = account1.address;
+      const maxSupply = await token721.maxSupply();
+
+      for (i = 1; i <= maxSupply; i++) {
+        await token721.connect(account1).mint(i);
+      }
+
+      await expect(token721.connect(account1).mint(maxSupply + 1)).to.be.reverted;
+    });
   });
 });
