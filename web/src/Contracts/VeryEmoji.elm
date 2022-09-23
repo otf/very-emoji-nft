@@ -10,6 +10,7 @@ module Contracts.VeryEmoji exposing
     , balanceOf
     , getApproved
     , isApprovedForAll
+    , maxSupply
     , mint
     , name
     , ownerOf
@@ -18,7 +19,10 @@ module Contracts.VeryEmoji exposing
     , setApprovalForAll
     , supportsInterface
     , symbol
+    , tokenByIndex
+    , tokenOfOwnerByIndex
     , tokenURI
+    , totalSupply
     , transferDecoder
     , transferEvent
     , transferFrom
@@ -101,6 +105,22 @@ isApprovedForAll contractAddress owner_ operator_ =
     , data = Just <| E.functionCall "e985e9c5" [ E.address owner_, E.address operator_ ]
     , nonce = Nothing
     , decoder = toElmDecoder D.bool
+    }
+
+
+-- maxSupply() function
+
+
+maxSupply : Address -> Call BigInt
+maxSupply contractAddress =
+    { to = Just contractAddress
+    , from = Nothing
+    , gas = Nothing
+    , gasPrice = Nothing
+    , value = Nothing
+    , data = Just <| E.functionCall "d5abeb01" []
+    , nonce = Nothing
+    , decoder = toElmDecoder D.uint
     }
 
 
@@ -232,6 +252,38 @@ symbol contractAddress =
     }
 
 
+-- tokenByIndex(uint256) function
+
+
+tokenByIndex : Address -> BigInt -> Call BigInt
+tokenByIndex contractAddress index_ =
+    { to = Just contractAddress
+    , from = Nothing
+    , gas = Nothing
+    , gasPrice = Nothing
+    , value = Nothing
+    , data = Just <| E.functionCall "4f6ccce7" [ E.uint index_ ]
+    , nonce = Nothing
+    , decoder = toElmDecoder D.uint
+    }
+
+
+-- tokenOfOwnerByIndex(address,uint256) function
+
+
+tokenOfOwnerByIndex : Address -> Address -> BigInt -> Call BigInt
+tokenOfOwnerByIndex contractAddress owner_ index_ =
+    { to = Just contractAddress
+    , from = Nothing
+    , gas = Nothing
+    , gasPrice = Nothing
+    , value = Nothing
+    , data = Just <| E.functionCall "2f745c59" [ E.address owner_, E.uint index_ ]
+    , nonce = Nothing
+    , decoder = toElmDecoder D.uint
+    }
+
+
 -- tokenURI(uint256) function
 
 
@@ -245,6 +297,22 @@ tokenURI contractAddress tokenId_ =
     , data = Just <| E.functionCall "c87b56dd" [ E.uint tokenId_ ]
     , nonce = Nothing
     , decoder = toElmDecoder D.string
+    }
+
+
+-- totalSupply() function
+
+
+totalSupply : Address -> Call BigInt
+totalSupply contractAddress =
+    { to = Just contractAddress
+    , from = Nothing
+    , gas = Nothing
+    , gasPrice = Nothing
+    , value = Nothing
+    , data = Just <| E.functionCall "18160ddd" []
+    , nonce = Nothing
+    , decoder = toElmDecoder D.uint
     }
 
 
