@@ -3,9 +3,10 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract VeryEmoji is ERC721 {
+contract VeryEmoji is ERC721, ERC721Enumerable {
     uint256 private _maxSupply = 16;
 
     constructor() ERC721("VeryEmoji", "EMOJI") {
@@ -44,5 +45,21 @@ contract VeryEmoji is ERC721 {
         returns (string memory)
     {
         return string(abi.encodePacked("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/", Strings.toString(_tokenId), ".json"));
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }

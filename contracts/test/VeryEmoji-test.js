@@ -58,5 +58,20 @@ describe("VeryEmoji contract", function () {
 
       await expect(token721.connect(account1).mint(maxSupply + 1)).to.be.reverted;
     });
+
+    it("Should has no totalSupply just after the contract created.", async function () {
+      expect(await token721.totalSupply()).to.equal(0);
+    });
+
+    it("Should be able to get totalSupply", async function () {
+      const address1 = account1.address;
+      const mintAmount = 3;
+
+      for (i = 1; i <= mintAmount; i++) {
+        await token721.connect(account1).mint(i);
+      }
+
+      expect(await token721.totalSupply()).to.equal(mintAmount);
+    });
   });
 });
