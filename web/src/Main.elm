@@ -129,7 +129,9 @@ update msg model =
             in
             case contractAddress of
                 Ok contractAddr ->
-                    ( model
+                    ( { model
+                        | contractAddress = Just contractAddr
+                      }
                     , Cmd.batch
                         [ callTotalSupply model.provider contractAddr
                         , callMaxSupply model.provider contractAddr
@@ -140,19 +142,12 @@ update msg model =
                     ( { model | message = message }, Cmd.none )
 
         Mint ->
-            let
-                contractAddress =
-                    EthUtils.toAddress model.inputContractAddress
-            in
-            case ( contractAddress, model.totalSupply ) of
-                ( Ok contractAddr, Just totalSupply ) ->
+            case ( model.contractAddress, model.totalSupply ) of
+                ( Just contractAddr, Just totalSupply ) ->
                     ( model, mint model.provider contractAddr (BigInt.add totalSupply (BigInt.fromInt 1)) )
 
-                ( Ok contractAddr, Nothing ) ->
+                _ ->
                     ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
-
-                ( Err message, _ ) ->
-                    ( { model | message = message }, Cmd.none )
 
         GotContractAddress strContractAddress ->
             ( { model | inputContractAddress = strContractAddress }, Cmd.none )
