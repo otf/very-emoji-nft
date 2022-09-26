@@ -10,7 +10,7 @@ export function txSentry(fromElm, toElm, web3) {
         try {
             web3.request({
               method: 'eth_sendTransaction',
-              params: txData.txParams
+              params: [ txData.txParams ]
             }).then(function (e, r) {
                 toElm.send({ ref: txData.ref, txHash: r || e });
             });
