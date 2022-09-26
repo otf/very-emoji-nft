@@ -56,7 +56,7 @@ type Msg
     | FetchContract
     | Mint
     | GotContractAddress String
-    | GotMint (Result Http.Error TxHash)
+    | GotMint (Result String Tx)
     | GotWalletStatus WalletSentry
     | GotTotalSupply (Result Http.Error BigInt)
     | GotMaxSupply (Result Http.Error BigInt)
@@ -83,12 +83,11 @@ init networkId =
     )
 
 
-mint : HttpProvider -> Address -> BigInt -> Cmd Msg
-mint provider contract tokenId =
-    VeryEmoji.mint contract tokenId
+mint : TxSentry Msg -> Address -> Address -> BigInt -> (TxSentry Msg, Cmd Msg)
+mint sentry from contract tokenId =
+    VeryEmoji.mint from contract tokenId
         |> Eth.toSend
-        |> Eth.sendTx provider
-        |> Task.attempt GotMint
+        |> TxSentry.send GotMint sentry
 
 
 imageUrl : BigInt -> String
@@ -143,9 +142,13 @@ update msg model =
                     ( { model | message = message }, Cmd.none )
 
         Mint ->
-            case ( model.contractAddress, model.totalSupply ) of
-                ( Just contractAddr, Just totalSupply ) ->
-                    ( model, mint model.provider contractAddr (BigInt.add totalSupply (BigInt.fromInt 1)) )
+            case (model.walletAddress, model.contractAddress, model.totalSupply ) of
+                ( Just walletAddr, Just contractAddr, Just totalSupply ) ->
+                    let
+                        (newTxSentry, mintCmd) =
+                            mint model.txSentry walletAddr contractAddr (BigInt.add totalSupply (BigInt.fromInt 1))
+                    in
+                    ( { model | txSentry = newTxSentry }, mintCmd)
 
                 _ ->
                     ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
@@ -153,7 +156,7 @@ update msg model =
         GotContractAddress strContractAddress ->
             ( { model | inputContractAddress = strContractAddress }, Cmd.none )
 
-        GotMint (Ok txHash) ->
+        GotMint (Ok tx) ->
             let
                 contractAddress =
                     EthUtils.toAddress model.inputContractAddress
@@ -161,7 +164,7 @@ update msg model =
             case contractAddress of
                 Ok contractAddr ->
                     ( { model
-                        | message = "You got a NFT!: " ++ EthUtils.txHashToString txHash
+                        | message = "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
                       }
                     , callTotalSupply model.provider contractAddr
                     )

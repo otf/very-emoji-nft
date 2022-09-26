@@ -127,10 +127,10 @@ maxSupply contractAddress =
 -- mint(uint256) function
 
 
-mint : Address -> BigInt -> Call ()
-mint contractAddress tokenId_ =
+mint : Address -> Address -> BigInt -> Call ()
+mint fromAddress contractAddress tokenId_ =
     { to = Just contractAddress
-    , from = Nothing
+    , from = Just fromAddress
     , gas = Nothing
     , gasPrice = Nothing
     , value = Nothing
