@@ -63,11 +63,12 @@ type Msg
     | GotFail String
 
 
-init : () -> ( Model, Cmd Msg )
-init () =
+init : Int -> ( Model, Cmd Msg )
+init networkId =
     let
         provider =
-            toProvider Net.Mainnet
+            Net.toNetworkId networkId
+                |> toProvider
     in
     ( { message = "Please connect your wallet."
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
@@ -350,7 +351,7 @@ mainLayout model =
             ]
 
 
-main : Program () Model Msg
+main : Program Int Model Msg
 main =
     Browser.element
         { init = init

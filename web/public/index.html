@@ -11,7 +11,9 @@
     import { txSentry, walletSentry } from './elm-ethereum-ports.js';
 
     if (typeof window.ethereum !== 'undefined') {
+        const networkId = ethereum.chainId;
         const app = Elm.Main.init({
+          flags: parseInt(networkId),
           node: document.getElementById('app')
         });
         txSentry(app.ports.txOut, app.ports.txIn, ethereum);
@@ -22,6 +24,7 @@
     } else {
       console.warn("Metamask not detected.");
       const app = Elm.Main.init({
+        flags: -1,
         node: document.getElementById('app')
       });
     }
