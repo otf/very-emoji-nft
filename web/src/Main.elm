@@ -214,6 +214,9 @@ toProvider networkId =
         Private 31337 ->
             "http://localhost:8545/"
 
+        Private 80001 ->
+            "https://matic-mumbai.chainstacklabs.com/"
+
         _ ->
             "UnknownEthNetwork"
 
