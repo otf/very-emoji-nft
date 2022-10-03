@@ -2,6 +2,7 @@ module Layout exposing (viewLayout)
 
 import ColorSchemes
 import Element exposing (..)
+import Element.Region as Region
 import Element.Background exposing (color)
 import Element.Border as Border
 import Element.Font as Font
@@ -49,7 +50,7 @@ blankEl txt w h attrs =
 
 viewLogo : Element msg
 viewLogo =
-    link []
+    link [ Region.heading 1 ]
         { url = "#"
         , label =
             image
