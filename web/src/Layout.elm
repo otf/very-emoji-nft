@@ -1,11 +1,11 @@
 module Layout exposing (viewLayout)
 
+import ColorSchemes
 import Element exposing (..)
 import Element.Background exposing (color)
 import Element.Border as Border
+import Element.Font as Font
 import Html exposing (Html)
-
-import ColorSchemes
 
 
 container : List (Attribute msg) -> List (Element msg) -> Element msg
@@ -25,16 +25,17 @@ container attrs elems =
 
 blankEl txt w h attrs =
     let
-      blankColor =
-          rgb255 180 180 180
+        blankColor =
+            rgb255 180 180 180
 
-      borderColor =
-          rgb255 0 0 0
+        borderColor =
+            rgb255 0 0 0
     in
     el
         ([ width <| w
          , height <| h
          , color blankColor
+         , Font.size 8
          , Border.color borderColor
          , Border.width 3
          , Border.dotted
@@ -42,15 +43,31 @@ blankEl txt w h attrs =
             ++ attrs
         )
     <|
-        el [ centerX, centerY ] 
-            <| text txt
+        el [ centerX, centerY ] <|
+            text txt
+
+
+viewLogo : Element msg
+viewLogo =
+    link []
+        { url = "#"
+        , label =
+            image
+                [ height <| px 32 ]
+                { src = "images/logo.svg"
+                , description = "Very Emoji"
+                }
+        }
 
 
 viewHeader : Element msg
 viewHeader =
-    row [ width fill ]
-        [ blankEl "LOGO" (px 200) (px 60) []
-        , blankEl "CONNECT WALLET" (px 200) (px 60) [ alignRight ]
+    row
+        [ width fill
+        , padding 32
+        ]
+        [ viewLogo
+        , blankEl "CONNECT WALLET" (px 200) (px 32) [ alignRight ]
         ]
 
 
@@ -68,7 +85,6 @@ viewJumbotron =
         [ width fill ]
         [ blankEl "Jumbotron" fill (px 320) [ centerX ]
         ]
-
 
 
 viewFooter : Element msg
