@@ -17,6 +17,8 @@ import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
 import Task as Task exposing (attempt)
 
+import Layout
+
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
 
@@ -225,140 +227,11 @@ toProvider networkId =
             "UnknownEthNetwork"
 
 
-logo : Element msg
-logo =
-    el
-        [ width <| px 80
-        , height <| px 40
-        ]
-    <|
-        el [ Region.heading 1 ] <|
-            text "Very Emoji"
-
-
-header : Model -> Element Msg
-header { walletAddress } =
-    let
-        connectWalletText =
-            case walletAddress of
-                Just addr ->
-                    EthUtils.addressToString addr
-
-                Nothing ->
-                    "CONNECT WALLET"
-    in
-    row
-        [ width fill
-        , padding 20
-        , spacing 20
-        ]
-        [ logo
-        , Input.button
-            [ alignRight
-            ]
-            { label = text connectWalletText
-            , onPress = Just ConnectWallet
-            }
-        ]
-
-
-viewIpfsImage : BigInt -> Element msg
-viewIpfsImage totalSupply =
-    image
-        [ centerX
-        ]
-        { src = imageUrl totalSupply
-        , description = "Very Emoji NFT"
-        }
-
-
-viewSupply : BigInt -> BigInt -> Element msg
-viewSupply totalSupply maxSupply =
-    el
-        [ centerX
-        ]
-    <|
-        text <|
-            BigInt.toString totalSupply
-                ++ "/"
-                ++ BigInt.toString maxSupply
-
-
-viewNft : Model -> Element Msg
-viewNft model =
-    let
-        mintButton =
-            Input.button
-                [ centerX ]
-                { label = text "Mint", onPress = Just Mint }
-
-        contractAddressInput =
-            Input.text
-                [ centerX
-                ]
-                { onChange = GotContractAddress
-                , text = model.inputContractAddress
-                , placeholder = Nothing
-                , label = Input.labelLeft [] <| text "Contract Address: "
-                }
-
-        fetchContractButton =
-            Input.button
-                [ centerX ]
-                { label = text "Fetch the contract", onPress = Just FetchContract }
-    in
-    case ( model.walletAddress, model.totalSupply, model.maxSupply ) of
-        ( Just _, Just total, Just max ) ->
-            let
-                nextTokenId =
-                    BigInt.add total (BigInt.fromInt 1)
-            in
-            if BigInt.lt total max then
-                column
-                    [ centerX ]
-                    [ viewIpfsImage nextTokenId
-                    , viewSupply nextTokenId max
-                    , mintButton
-                    ]
-
-            else
-                text "All NFTs are minted."
-
-        ( Just _, _, _ ) ->
-            column
-                [ centerX ]
-                [ contractAddressInput
-                , fetchContractButton
-                ]
-
-        _ ->
-            Element.none
-
-
-content : Model -> Element Msg
-content ({ inputContractAddress, walletAddress, message } as model) =
-    column
-        [ centerX
-        ]
-        [ viewNft model
-        , text message
-        ]
-
-
-mainLayout : Model -> Html Msg
-mainLayout model =
-    layout [ width fill, height fill ] <|
-        column [ width fill ]
-            [ header model
-            , content model
-            ]
-
-
 main : Program Int Model Msg
 main =
     Browser.element
         { init = init
-        , view = mainLayout
+        , view = \model -> Layout.viewLayout
         , update = update
         , subscriptions = subscriptions
         }
