@@ -5,6 +5,7 @@ import Element.Background exposing (color)
 import Element.Border as Border
 import Html exposing (Html)
 
+import ColorSchemes
 
 
 container : List (Attribute msg) -> List (Element msg) -> Element msg
@@ -86,7 +87,10 @@ viewLayout =
         , height fill
         ]
     <|
-        column [ width fill ]
+        column
+            [ width fill
+            , ColorSchemes.backgroundColor
+            ]
             [ viewHeader
             , viewJumbotron
             , viewContent
