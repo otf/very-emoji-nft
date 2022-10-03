@@ -85,7 +85,7 @@ init networkId =
     )
 
 
-mint : TxSentry Msg -> Address -> Address -> BigInt -> (TxSentry Msg, Cmd Msg)
+mint : TxSentry Msg -> Address -> Address -> BigInt -> ( TxSentry Msg, Cmd Msg )
 mint sentry from contract tokenId =
     VeryEmoji.mint from contract tokenId
         |> Eth.toSend
@@ -144,13 +144,13 @@ update msg model =
                     ( { model | message = message }, Cmd.none )
 
         Mint ->
-            case (model.walletAddress, model.contractAddress, model.totalSupply ) of
+            case ( model.walletAddress, model.contractAddress, model.totalSupply ) of
                 ( Just walletAddr, Just contractAddr, Just totalSupply ) ->
                     let
-                        (newTxSentry, mintCmd) =
+                        ( newTxSentry, mintCmd ) =
                             mint model.txSentry walletAddr contractAddr (BigInt.add totalSupply (BigInt.fromInt 1))
                     in
-                    ( { model | txSentry = newTxSentry }, mintCmd)
+                    ( { model | txSentry = newTxSentry }, mintCmd )
 
                 _ ->
                     ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
