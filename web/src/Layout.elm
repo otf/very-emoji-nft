@@ -53,7 +53,7 @@ viewLogo =
         { url = "#"
         , label =
             image
-                [ height <| px 32 ]
+                [ height <| px 40 ]
                 { src = "images/logo.svg"
                 , description = "Very Emoji"
                 }
@@ -67,7 +67,7 @@ viewHeader =
         , padding 32
         ]
         [ viewLogo
-        , blankEl "CONNECT WALLET" (px 200) (px 32) [ alignRight ]
+        , blankEl "CONNECT WALLET" (px 200) (px 40) [ alignRight ]
         ]
 
 
