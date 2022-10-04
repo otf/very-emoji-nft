@@ -1,4 +1,4 @@
-module ConnectWalletButton exposing (viewConnectWalletButton)
+module Components.ConnectWalletButton exposing (viewConnectWalletButton)
 
 import ColorSchemes
 import Element exposing (..)

@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import BigInt exposing (BigInt)
 import Browser
-import ConnectWalletButton
+import Components.ConnectWalletButton exposing (viewConnectWalletButton)
 import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
@@ -230,7 +230,7 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     Layout.viewLayout
-        <| ConnectWalletButton.viewConnectWalletButton model.walletAddress ConnectWallet
+        <| viewConnectWalletButton model.walletAddress ConnectWallet
 
 
 main : Program Int Model Msg
