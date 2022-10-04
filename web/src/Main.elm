@@ -227,11 +227,17 @@ toProvider networkId =
             "UnknownEthNetwork"
 
 
+view : Model -> Html Msg
+view model =
+    Layout.viewLayout
+        <| ConnectWalletButton.viewConnectWalletButton model.walletAddress ConnectWallet
+
+
 main : Program Int Model Msg
 main =
     Browser.element
         { init = init
-        , view = \model -> Layout.viewLayout ConnectWalletButton.viewConnectWalletButton
+        , view = view
         , update = update
         , subscriptions = subscriptions
         }
