@@ -22,3 +22,11 @@ buttonForegroundColor =
 
 buttonBackgroundColor =
     color <| rgb255 206 213 244
+
+
+jumbotronBackgroundColor =
+    color <| rgb255 200 150 200
+
+
+jumbotronForegroundColor =
+    Font.color <| rgb255 60 60 60

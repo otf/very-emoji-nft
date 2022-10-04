@@ -1,4 +1,4 @@
-module Layout exposing (viewLayout)
+module Layout exposing (viewLayout, Layout)
 
 import ColorSchemes
 import Element exposing (..)
@@ -9,20 +9,20 @@ import Element.Font as Font
 import Html exposing (Html)
 
 
-container : List (Attribute msg) -> List (Element msg) -> Element msg
-container attrs elems =
+container : List (Attribute msg) -> Element msg -> Element msg
+container attrs elem =
     let
         containerWidth =
             width <| maximum 960 <| fill
     in
-    row
+    el
         ([ containerWidth
          , centerX
          , padding 32
          ]
             ++ attrs
         )
-        elems
+        elem
 
 
 blankEl txt w h attrs =
@@ -84,16 +84,8 @@ viewContent : Element msg
 viewContent =
     container
         []
-        [ blankEl "GALLERY" fill (px 1920) []
-        ]
-
-
-viewJumbotron : Element msg
-viewJumbotron =
-    row
-        [ width fill ]
-        [ blankEl "Jumbotron" fill (px 320) [ centerX ]
-        ]
+        <|
+            blankEl "GALLERY" fill (px 1920) []
 
 
 viewFooter : Element msg
@@ -105,8 +97,13 @@ viewFooter =
         ]
 
 
-viewLayout : Element msg -> Html msg
-viewLayout connectWalletButton =
+type alias Layout msg =
+    { connectWalletButton : Element msg
+    , jumbotron : (Element msg -> Element msg) -> Element msg
+    }
+
+viewLayout : Layout msg -> Html msg
+viewLayout { connectWalletButton, jumbotron } =
     layout
         [ width (fill |> minimum 360)
         , height fill
@@ -117,7 +114,7 @@ viewLayout connectWalletButton =
             , ColorSchemes.backgroundColor
             ]
             [ viewHeader connectWalletButton
-            , viewJumbotron
+            , jumbotron (container [])
             , viewContent
             , viewFooter
             ]
