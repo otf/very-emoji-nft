@@ -13,7 +13,7 @@ container : List (Attribute msg) -> List (Element msg) -> Element msg
 container attrs elems =
     let
         containerWidth =
-            width <| (fill |> maximum 960)
+            width <| maximum 960 <| fill
     in
     row
         ([ containerWidth
@@ -76,7 +76,7 @@ viewContent : Element msg
 viewContent =
     container
         []
-        [ blankEl "GALLERY" (px 960) (px 1920) []
+        [ blankEl "GALLERY" fill (px 1920) []
         ]
 
 
