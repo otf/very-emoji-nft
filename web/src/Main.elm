@@ -16,9 +16,8 @@ import Eth.Utils as EthUtils
 import Html exposing (Html)
 import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
-import Task as Task exposing (attempt)
-
 import Layout
+import Task as Task exposing (attempt)
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
