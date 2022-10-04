@@ -1,7 +1,8 @@
 module ColorSchemes exposing (..)
 
 import Element exposing (rgb255)
-import Element.Background exposing (gradient)
+import Element.Background exposing (color, gradient)
+import Element.Font as Font
 
 
 backgroundColor =
@@ -13,3 +14,11 @@ backgroundColor =
             , rgb255 199 201 248
             ]
         }
+
+
+buttonForegroundColor =
+    Font.color <| rgb255 70 85 150
+
+
+buttonBackgroundColor =
+    color <| rgb255 206 213 244

@@ -2,6 +2,7 @@ port module Main exposing (..)
 
 import BigInt exposing (BigInt)
 import Browser
+import ConnectWalletButton
 import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
@@ -18,7 +19,6 @@ import Json.Decode as Decode exposing (Value)
 import Task as Task exposing (attempt)
 
 import Layout
-import ConnectWalletButton
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
