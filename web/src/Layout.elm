@@ -49,13 +49,13 @@ blankEl txt w h attrs =
             text txt
 
 
-viewLogo : Element msg
-viewLogo =
+viewLogo : List (Attribute msg) -> Element msg
+viewLogo attrs =
     link [ Region.heading 1 ]
         { url = "#"
         , label =
             image
-                [ height <| px 40 ]
+                attrs
                 { src = "images/logo.svg"
                 , description = "Very Emoji"
                 }
@@ -64,12 +64,14 @@ viewLogo =
 
 viewHeader : Element msg
 viewHeader =
-    row
+    wrappedRow
         [ width fill
         , padding 32
+        , spacingXY 64 32
         ]
-        [ viewLogo
-        , blankEl "CONNECT WALLET" (px 200) (px 40) [ alignRight ]
+        [ viewLogo [ width (fillPortion 1) ]
+        , el [ width (fillPortion 6), height (px 0) ] Element.none
+        , blankEl "CONNECT WALLET" (fillPortion 1 |> maximum 480) shrink [ alignRight, padding 8 ]
         ]
 
 
@@ -101,7 +103,7 @@ viewFooter =
 viewLayout : Html msg
 viewLayout =
     layout
-        [ width fill
+        [ width (fill |> minimum 360)
         , height fill
         ]
     <|
