@@ -18,6 +18,7 @@ container attrs elems =
     row
         ([ containerWidth
          , centerX
+         , padding 32
          ]
             ++ attrs
         )
