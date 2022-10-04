@@ -18,6 +18,7 @@ import Json.Decode as Decode exposing (Value)
 import Task as Task exposing (attempt)
 
 import Layout
+import ConnectWalletButton
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
@@ -231,7 +232,7 @@ main : Program Int Model Msg
 main =
     Browser.element
         { init = init
-        , view = \model -> Layout.viewLayout
+        , view = \model -> Layout.viewLayout ConnectWalletButton.viewConnectWalletButton
         , update = update
         , subscriptions = subscriptions
         }

@@ -62,8 +62,8 @@ viewLogo attrs =
         }
 
 
-viewHeader : Element msg
-viewHeader =
+viewHeader : Element msg -> Element msg
+viewHeader connectWalletButton =
     wrappedRow
         [ width fill
         , padding 32
@@ -71,7 +71,12 @@ viewHeader =
         ]
         [ viewLogo [ width (fillPortion 1) ]
         , el [ width (fillPortion 6), height (px 0) ] Element.none
-        , blankEl "CONNECT WALLET" (fillPortion 1 |> maximum 480) shrink [ alignRight, padding 8 ]
+        , el
+            [ width (fillPortion 1 |> maximum 480)
+            , height shrink
+            , alignRight
+            ]
+            connectWalletButton
         ]
 
 
@@ -100,8 +105,8 @@ viewFooter =
         ]
 
 
-viewLayout : Html msg
-viewLayout =
+viewLayout : Element msg -> Html msg
+viewLayout connectWalletButton =
     layout
         [ width (fill |> minimum 360)
         , height fill
@@ -111,7 +116,7 @@ viewLayout =
             [ width fill
             , ColorSchemes.backgroundColor
             ]
-            [ viewHeader
+            [ viewHeader connectWalletButton
             , viewJumbotron
             , viewContent
             , viewFooter
