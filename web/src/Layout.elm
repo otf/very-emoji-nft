@@ -80,14 +80,6 @@ viewHeader connectWalletButton =
         ]
 
 
-viewContent : Element msg
-viewContent =
-    container
-        []
-        <|
-            blankEl "GALLERY" fill (px 1920) []
-
-
 viewFooter : Element msg
 viewFooter =
     row
@@ -100,10 +92,11 @@ viewFooter =
 type alias Layout msg =
     { connectWalletButton : Element msg
     , jumbotron : (Element msg -> Element msg) -> Element msg
+    , gallery : (Element msg -> Element msg) -> Element msg
     }
 
 viewLayout : Layout msg -> Html msg
-viewLayout { connectWalletButton, jumbotron } =
+viewLayout { connectWalletButton, jumbotron, gallery } =
     layout
         [ width (fill |> minimum 360)
         , height fill
@@ -115,6 +108,6 @@ viewLayout { connectWalletButton, jumbotron } =
             ]
             [ viewHeader connectWalletButton
             , jumbotron (container [])
-            , viewContent
+            , gallery (container [])
             , viewFooter
             ]

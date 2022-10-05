@@ -4,6 +4,7 @@ import BigInt exposing (BigInt)
 import Browser
 import Components.ConnectWalletButton exposing (viewConnectWalletButton)
 import Components.Jumbotron exposing (viewJumbotron)
+import Components.Gallery exposing (viewGallery)
 import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
@@ -234,6 +235,7 @@ view model =
         <|
             { connectWalletButton = viewConnectWalletButton model.walletAddress ConnectWallet
             , jumbotron = viewJumbotron
+            , gallery = viewGallery
             }
 
 
