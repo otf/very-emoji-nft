@@ -37,3 +37,10 @@ galleryBackgroundColor =
 
 galleryBorderColor =
     Border.color <| rgb255 237 210 233
+
+
+emojiBackgroundColor =
+    color <| rgb255 230 230 230
+
+emojiBorderColor =
+    Border.color <| rgb255 237 210 233

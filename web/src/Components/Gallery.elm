@@ -9,19 +9,21 @@ import Element.Input as Input
 import Element.Region as Region
 
 
-viewGallery : (Element msg -> Element msg) -> Element msg
-viewGallery wrapContainer =
+viewGallery : (List (Element msg)) -> (Element msg -> Element msg) -> Element msg
+viewGallery emojiList wrapContainer =
     el
         [ width fill
         ]
         <|
             wrapContainer
                 <|
-                    el 
+                    wrappedRow
                         [ width fill
-                        , height (px 1920)
                         , ColorSchemes.galleryBackgroundColor
                         , Border.width 2
                         , Border.rounded 16
                         , ColorSchemes.galleryBorderColor
-                        ] Element.none
+                        , padding 32
+                        , spacing 32
+                        ]
+                        emojiList
