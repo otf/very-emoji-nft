@@ -11,7 +11,7 @@ import Element.Region as Region
 
 imageUrl : BigInt -> String
 imageUrl tokenId =
-    "http://localhost:8080/ipfs/QmU8iCM7QYECrWtWjKUN6QZcu6Z4Se9gM1CjDtsUAVc4AX/1.svg"
+    "https://ipfs.io/ipfs/QmNpH56esUre1Rn4VtouhwniU1JdNegvq8qfDQZivUVb2c/1.svg"
 
 viewIpfsImage : BigInt -> Element msg
 viewIpfsImage tokenId =
