@@ -2,6 +2,7 @@ module ColorSchemes exposing (..)
 
 import Element exposing (rgb255)
 import Element.Background exposing (color, gradient)
+import Element.Border as Border
 import Element.Font as Font
 
 
@@ -30,3 +31,9 @@ jumbotronBackgroundColor =
 
 jumbotronForegroundColor =
     Font.color <| rgb255 60 60 60
+
+galleryBackgroundColor =
+    color <| rgb255 250 250 250
+
+galleryBorderColor =
+    Border.color <| rgb255 237 210 233
