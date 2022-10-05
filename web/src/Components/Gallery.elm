@@ -23,7 +23,7 @@ viewGallery emojiList wrapContainer =
                         , Border.width 2
                         , Border.rounded 16
                         , ColorSchemes.galleryBorderColor
-                        , padding 32
-                        , spacing 32
+                        , padding 24
+                        , spacing 24
                         ]
                         emojiList

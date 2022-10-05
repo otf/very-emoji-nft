@@ -39,8 +39,26 @@ galleryBorderColor =
     Border.color <| rgb255 237 210 233
 
 
+emojiForegroundColor =
+    Font.color <| rgb255 115 115 115
+
+
 emojiBackgroundColor =
     color <| rgb255 230 230 230
 
+
 emojiBorderColor =
     Border.color <| rgb255 237 210 233
+
+
+mintButtonForegroundColor =
+    Font.color <| rgb255 255 255 255
+
+
+mintButtonBorderColor =
+    Border.color <| rgb255 255 185 200
+
+
+mintButtonBackgroundColor =
+    color <| rgb255 255 185 220
+

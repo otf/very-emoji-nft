@@ -232,11 +232,17 @@ toProvider networkId =
 
 view : Model -> Html Msg
 view model =
+    let
+        emojiList =
+            List.range 1 288
+            |> List.map BigInt.fromInt
+            |> List.map viewEmoji
+    in
     Layout.viewLayout
         <|
             { connectWalletButton = viewConnectWalletButton model.walletAddress ConnectWallet
             , jumbotron = viewJumbotron
-            , gallery = viewGallery <| [ viewEmoji ]
+            , gallery = viewGallery emojiList
             }
 
 
