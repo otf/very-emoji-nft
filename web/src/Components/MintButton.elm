@@ -11,8 +11,8 @@ import Eth.Types exposing (Address)
 import Eth.Utils exposing (addressToString)
 
 
-viewMintButton : Element msg
-viewMintButton =
+viewMintButton : msg -> Element msg
+viewMintButton msg =
     Input.button
         [ padding 12
         , width fill
@@ -25,6 +25,6 @@ viewMintButton =
         , Border.rounded 20
         , ColorSchemes.mintButtonBorderColor
         ]
-        { onPress = Nothing
+        { onPress = Just msg
         , label = text "ミント"
         }

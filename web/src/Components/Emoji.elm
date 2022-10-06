@@ -34,8 +34,8 @@ viewTokenId tokenId =
       <|
           text ("#" ++ (toString tokenId))
 
-viewEmoji : BigInt -> Element msg
-viewEmoji tokenId =
+viewEmoji : msg -> BigInt -> Element msg
+viewEmoji msg tokenId =
     el
         [ Border.width 2
         , Border.rounded 16
@@ -52,5 +52,5 @@ viewEmoji tokenId =
                 ]
                 [ viewTokenId tokenId
                 , viewIpfsImage tokenId
-                , viewMintButton
+                , viewMintButton msg
                 ]

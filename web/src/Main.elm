@@ -236,7 +236,7 @@ view model =
         emojiList =
             List.range 1 288
             |> List.map BigInt.fromInt
-            |> List.map viewEmoji
+            |> List.map (viewEmoji Mint)
     in
     Layout.viewLayout
         <|
