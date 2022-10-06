@@ -20,7 +20,7 @@ import Html exposing (Html)
 import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
 import Layout
-import Task as Task exposing (attempt)
+import Task as Task exposing (attempt, perform)
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
@@ -77,14 +77,14 @@ init networkId =
     in
     ( { message = "Please connect your wallet."
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
-      , inputContractAddress = ""
+      , inputContractAddress = "0x0a76Eb09d6ae4e7df12C670b8eF336FcBf03F8dE"
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
       , totalSupply = Nothing
       , maxSupply = Nothing
       }
-    , Cmd.none
+    , Task.perform (always FetchContract) (Task.succeed ())
     )
 
 
