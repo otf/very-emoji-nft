@@ -126,7 +126,7 @@ callTokenByIndex provider contract index =
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
-    if BigInt.gt max n then
+    if BigInt.gte max n then
         Just (n, BigInt.add n (BigInt.fromInt 1))
     else
         Nothing
