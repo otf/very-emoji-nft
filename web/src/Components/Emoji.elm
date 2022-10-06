@@ -34,8 +34,8 @@ viewTokenId tokenId =
       <|
           text ("#" ++ (toString tokenId))
 
-viewEmoji : msg -> BigInt -> Element msg
-viewEmoji msg tokenId =
+viewEmoji : (BigInt -> msg) -> (BigInt -> Bool) -> BigInt -> Element msg
+viewEmoji msg isMinted tokenId =
     el
         [ Border.width 2
         , Border.rounded 16
@@ -52,5 +52,5 @@ viewEmoji msg tokenId =
                 ]
                 [ viewTokenId tokenId
                 , viewIpfsImage tokenId
-                , viewMintButton msg
+                , viewMintButton (msg tokenId) (isMinted tokenId)
                 ]

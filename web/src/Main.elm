@@ -21,6 +21,7 @@ import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
 import Layout
 import Task as Task exposing (attempt, perform)
+import List.Extra exposing (unfoldr)
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
@@ -52,6 +53,7 @@ type alias Model =
     , provider : HttpProvider
     , totalSupply : Maybe BigInt
     , maxSupply : Maybe BigInt
+    , mintedTokenIds : List BigInt
     }
 
 
@@ -59,12 +61,13 @@ type Msg
     = TxSentryMsg TxSentry.Msg
     | ConnectWallet
     | FetchContract
-    | Mint
+    | Mint BigInt
     | GotContractAddress String
     | GotMint (Result String Tx)
     | GotWalletStatus WalletSentry
     | GotTotalSupply (Result Http.Error BigInt)
     | GotMaxSupply (Result Http.Error BigInt)
+    | GotTokenByIndex (Result Http.Error BigInt)
     | GotFail String
 
 
@@ -83,6 +86,7 @@ init networkId =
       , provider = provider
       , totalSupply = Nothing
       , maxSupply = Nothing
+      , mintedTokenIds = []
       }
     , Task.perform (always FetchContract) (Task.succeed ())
     )
@@ -112,6 +116,13 @@ callMaxSupply provider contract =
     VeryEmoji.maxSupply contract
         |> Eth.call provider
         |> Task.attempt GotMaxSupply
+
+
+callTokenByIndex : HttpProvider -> Address -> BigInt -> Cmd Msg
+callTokenByIndex provider contract index =
+    VeryEmoji.tokenByIndex contract index
+        |> Eth.call provider
+        |> Task.attempt GotTokenByIndex
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -146,12 +157,12 @@ update msg model =
                 Err message ->
                     ( { model | message = message }, Cmd.none )
 
-        Mint ->
+        Mint tokenId ->
             case ( model.walletAddress, model.contractAddress, model.totalSupply ) of
                 ( Just walletAddr, Just contractAddr, Just totalSupply ) ->
                     let
                         ( newTxSentry, mintCmd ) =
-                            mint model.txSentry walletAddr contractAddr (BigInt.add totalSupply (BigInt.fromInt 1))
+                            mint model.txSentry walletAddr contractAddr tokenId
                     in
                     ( { model | txSentry = newTxSentry }, mintCmd )
 
@@ -199,7 +210,23 @@ update msg model =
             )
 
         GotTotalSupply (Ok totalSupply) ->
-            ( { model | totalSupply = Just totalSupply }, Cmd.none )
+            case model.contractAddress of
+                Just contractAddr ->
+                    let
+                        incrementUntilTotalSupply n =
+                            if BigInt.gt totalSupply n then
+                                Just (n, BigInt.add n (BigInt.fromInt 1))
+                            else
+                                Nothing
+                        cmds =
+                            unfoldr incrementUntilTotalSupply (BigInt.fromInt 0)
+                            |> List.map (callTokenByIndex model.provider contractAddr)
+
+                    in
+
+                    ( { model | totalSupply = Just totalSupply, mintedTokenIds = [] }, Cmd.batch cmds )
+                Nothing ->
+                    ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
 
         GotTotalSupply (Err _) ->
             ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
@@ -208,6 +235,12 @@ update msg model =
             ( { model | maxSupply = Just maxSupply }, Cmd.none )
 
         GotMaxSupply (Err _) ->
+            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+
+        GotTokenByIndex (Ok tokenId) ->
+            ( { model | mintedTokenIds = tokenId :: model.mintedTokenIds }, Cmd.none )
+
+        GotTokenByIndex (Err _) ->
             ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
 
         GotFail message ->
@@ -233,10 +266,13 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
+        totalSupply =
+            model.totalSupply
+            |> Maybe.withDefault (BigInt.fromInt 0)
         emojiList =
             List.range 1 288
             |> List.map BigInt.fromInt
-            |> List.map (viewEmoji Mint)
+            |> List.map (viewEmoji Mint (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
     in
     Layout.viewLayout
         <|
