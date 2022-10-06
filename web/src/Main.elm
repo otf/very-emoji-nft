@@ -124,6 +124,13 @@ callTokenByIndex provider contract index =
         |> Eth.call provider
         |> Task.attempt GotTokenByIndex
 
+zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
+zeroToUntil max n =
+    if BigInt.gt max n then
+        Just (n, BigInt.add n (BigInt.fromInt 1))
+    else
+        Nothing
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -213,13 +220,8 @@ update msg model =
             case model.contractAddress of
                 Just contractAddr ->
                     let
-                        incrementUntilTotalSupply n =
-                            if BigInt.gt totalSupply n then
-                                Just (n, BigInt.add n (BigInt.fromInt 1))
-                            else
-                                Nothing
                         cmds =
-                            unfoldr incrementUntilTotalSupply (BigInt.fromInt 0)
+                            unfoldr (zeroToUntil totalSupply) (BigInt.fromInt 0)
                             |> List.map (callTokenByIndex model.provider contractAddr)
 
                     in
@@ -269,9 +271,13 @@ view model =
         totalSupply =
             model.totalSupply
             |> Maybe.withDefault (BigInt.fromInt 0)
+
+        maxSupply =
+            model.maxSupply
+            |> Maybe.withDefault (BigInt.fromInt 0)
+
         emojiList =
-            List.range 1 288
-            |> List.map BigInt.fromInt
+            unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 1)
             |> List.map (viewEmoji Mint (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
     in
     Layout.viewLayout
