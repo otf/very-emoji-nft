@@ -80,24 +80,32 @@ viewHeader connectWalletButton =
         ]
 
 
+viewSocialLink : String -> String -> String -> Element msg
+viewSocialLink url imgSrc alt =
+    newTabLink
+       [ centerX
+       ]
+       { url = url
+       , label =
+           image
+             [ width (px 40)
+             ]
+             { src = imgSrc
+             , description = alt
+             }
+       }
+
+
+
 viewFooter : Element msg
 viewFooter =
     row
         [ width fill
         , padding 32
+        , spacing 32
         ]
-        [ newTabLink
-            [ centerX
-            ]
-            { url = "https://twitter.com/sizuku_eth"
-            , label =
-                image
-                  [ width (px 40)
-                  ]
-                  { src = "images/twitter.svg"
-                  , description = "twitter/@sizuku_eth"
-                  }
-            }
+        [ viewSocialLink "https://twitter.com/sizuku_eth" "images/twitter.svg" "twitter/@sizuku_eth"
+        , viewSocialLink "https://etherscan.io/address/0xTEST" "images/etherscan.svg" "etherscan"
         ]
 
 
