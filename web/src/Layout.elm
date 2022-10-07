@@ -84,8 +84,20 @@ viewFooter : Element msg
 viewFooter =
     row
         [ width fill
+        , padding 32
         ]
-        [ blankEl "T" (px 32) (px 32) [ centerX ]
+        [ newTabLink
+            [ centerX
+            ]
+            { url = "https://twitter.com/sizuku_eth"
+            , label =
+                image
+                  [ width (px 40)
+                  ]
+                  { src = "images/twitter.svg"
+                  , description = "twitter/@sizuku_eth"
+                  }
+            }
         ]
 
 
