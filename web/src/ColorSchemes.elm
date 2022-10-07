@@ -62,3 +62,7 @@ mintButtonBorderColor =
 mintButtonBackgroundColor =
     color <| rgb255 255 185 220
 
+
+headerBackgroundColor =
+    color <| rgb255 215 190 240
+

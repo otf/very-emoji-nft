@@ -49,9 +49,9 @@ blankEl txt w h attrs =
             text txt
 
 
-viewLogo : List (Attribute msg) -> Element msg
-viewLogo attrs =
-    link [ Region.heading 1 ]
+viewLogo : List (Attribute msg) -> Bool -> Element msg
+viewLogo attrs enabled =
+    link (if enabled then [Region.heading 1] else [ ])
         { url = "#"
         , label =
             image
@@ -62,14 +62,16 @@ viewLogo attrs =
         }
 
 
-viewHeader : Element msg -> Element msg
-viewHeader connectWalletButton =
+viewHeader : Element msg -> Bool -> Element msg
+viewHeader connectWalletButton enabled =
     wrappedRow
         [ width fill
         , padding 32
         , spacingXY 64 32
+        , ColorSchemes.headerBackgroundColor
+        , transparent <| not enabled
         ]
-        [ viewLogo [ width (fillPortion 1) ]
+        [ viewLogo [ width (fillPortion 1) ] enabled
         , el [ width (fillPortion 6), height (px 0) ] Element.none
         , el
             [ width (fillPortion 1 |> maximum 480)
@@ -117,16 +119,20 @@ type alias Layout msg =
 
 viewLayout : Layout msg -> Html msg
 viewLayout { connectWalletButton, jumbotron, gallery } =
+    let
+        header = viewHeader connectWalletButton
+    in
     layout
         [ width (fill |> minimum 360)
         , height fill
+        , inFront <| header True
         ]
     <|
         column
             [ width fill
             , ColorSchemes.backgroundColor
             ]
-            [ viewHeader connectWalletButton
+            [ header False
             , jumbotron (container [])
             , gallery (container [])
             , viewFooter
