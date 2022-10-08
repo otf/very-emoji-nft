@@ -279,7 +279,7 @@ view model =
             case (model.totalSupply, model.maxSupply) of
                 (Just totalSupply, Just maxSupply) ->
                     unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 1)
-                    |> List.map (viewEmoji Mint (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
+                    |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
                 _ ->
                     []
     in

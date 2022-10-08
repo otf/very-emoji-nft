@@ -8,6 +8,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
+import Eth.Types exposing (Address)
 
 imageUrl : BigInt -> String
 imageUrl tokenId =
@@ -34,8 +35,8 @@ viewTokenId tokenId =
       <|
           text ("#" ++ (toString tokenId))
 
-viewEmoji : (BigInt -> msg) -> (BigInt -> Bool) -> BigInt -> Element msg
-viewEmoji msg isMinted tokenId =
+viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> BigInt -> Element msg
+viewEmoji msg walletAddress isMinted tokenId =
     el
         [ Border.width 2
         , Border.rounded 16
@@ -52,5 +53,5 @@ viewEmoji msg isMinted tokenId =
                 ]
                 [ viewTokenId tokenId
                 , viewIpfsImage tokenId
-                , viewMintButton (msg tokenId) (isMinted tokenId)
+                , viewMintButton (msg tokenId) walletAddress (isMinted tokenId)
                 ]

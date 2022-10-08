@@ -11,8 +11,12 @@ import Eth.Types exposing (Address)
 import Eth.Utils exposing (addressToString)
 
 
-viewMintButton : msg -> Bool -> Element msg
-viewMintButton msg isMinted =
+viewMintButton : msg -> Maybe Address -> Bool -> Element msg
+viewMintButton msg walletAddress isMinted =
+    let
+        canMint =
+            walletAddress /= Nothing && not isMinted
+    in
     Input.button
         [ padding 12
         , width fill
@@ -24,8 +28,8 @@ viewMintButton msg isMinted =
         , Border.width 2
         , Border.rounded 20
         , ColorSchemes.mintButtonBorderColor
-        , alpha (if isMinted then 0.5 else 1.0)
+        , alpha (if canMint then 1.0 else 0.5)
         ]
-        { onPress = if isMinted then Nothing else Just msg
+        { onPress = if canMint then Just msg else Nothing
         , label = text "ミント"
         }
