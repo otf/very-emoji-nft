@@ -22,7 +22,7 @@ viewJumbotron wrapContainer =
             wrapContainer
               <| textColumn 
                   [ width fill
-                  , paddingXY 0 32
+                  , paddingXY 0 128
                   , spacing 32 
                   ]
                   [ paragraph
