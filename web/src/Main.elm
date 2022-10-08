@@ -47,7 +47,6 @@ subscriptions model =
 type alias Model =
     { message : String
     , txSentry : TxSentry Msg
-    , inputContractAddress : String
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
     , provider : HttpProvider
@@ -62,7 +61,6 @@ type Msg
     | ConnectWallet
     | FetchContract
     | Mint BigInt
-    | GotContractAddress String
     | GotMint (Result String Tx)
     | GotWalletStatus WalletSentry
     | GotTotalSupply (Result Http.Error BigInt)
@@ -80,7 +78,6 @@ init networkId =
     in
     ( { message = "Please connect your wallet."
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
-      , inputContractAddress = "0x0a76Eb09d6ae4e7df12C670b8eF336FcBf03F8dE"
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
@@ -104,25 +101,29 @@ imageUrl tokenId =
     "http://localhost:8080/ipfs/QmU8iCM7QYECrWtWjKUN6QZcu6Z4Se9gM1CjDtsUAVc4AX/" ++ BigInt.toString tokenId ++ ".svg"
 
 
-callTotalSupply : HttpProvider -> Address -> Cmd Msg
+type alias Call =
+    HttpProvider -> Address -> Cmd Msg
+
+callTotalSupply : Call
 callTotalSupply provider contract =
     VeryEmoji.totalSupply contract
         |> Eth.call provider
         |> Task.attempt GotTotalSupply
 
 
-callMaxSupply : HttpProvider -> Address -> Cmd Msg
+callMaxSupply : Call
 callMaxSupply provider contract =
     VeryEmoji.maxSupply contract
         |> Eth.call provider
         |> Task.attempt GotMaxSupply
 
 
-callTokenByIndex : HttpProvider -> Address -> BigInt -> Cmd Msg
-callTokenByIndex provider contract index =
-    VeryEmoji.tokenByIndex contract index
-        |> Eth.call provider
-        |> Task.attempt GotTokenByIndex
+callTokenByIndex : BigInt -> Call
+callTokenByIndex index =
+    \provider contract ->
+        VeryEmoji.tokenByIndex contract index
+            |> Eth.call provider
+            |> Task.attempt GotTokenByIndex
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
@@ -130,6 +131,21 @@ zeroToUntil max n =
         Just (n, BigInt.add n (BigInt.fromInt 1))
     else
         Nothing
+
+callContract : Model -> List Call -> ( Model -> Model ) -> ( Model, Cmd Msg )
+callContract model callList updateModel =
+    case model.contractAddress of
+        Just contractAddr ->
+            let
+                batch =
+                    callList
+                    |> List.map (\call -> call model.provider contractAddr)
+                    |> Cmd.batch
+            in
+            ( updateModel model, batch )
+
+        Nothing ->
+            ( { model | message = "Contract Error" }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -148,7 +164,7 @@ update msg model =
         FetchContract ->
             let
                 contractAddress =
-                    EthUtils.toAddress model.inputContractAddress
+                    EthUtils.toAddress "0x0a76Eb09d6ae4e7df12C670b8eF336FcBf03F8dE"
             in
             case contractAddress of
                 Ok contractAddr ->
@@ -176,24 +192,14 @@ update msg model =
                 _ ->
                     ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
 
-        GotContractAddress strContractAddress ->
-            ( { model | inputContractAddress = strContractAddress }, Cmd.none )
-
         GotMint (Ok tx) ->
             let
-                contractAddress =
-                    EthUtils.toAddress model.inputContractAddress
+                updateModel m =
+                    { m
+                    | message = "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
+                    }
             in
-            case contractAddress of
-                Ok contractAddr ->
-                    ( { model
-                        | message = "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
-                      }
-                    , callTotalSupply model.provider contractAddr
-                    )
-
-                Err message ->
-                    ( { model | message = message }, Cmd.none )
+            callContract model [ callTotalSupply ] updateModel
 
         GotMint (Err _) ->
             ( { model | message = "Minting error has occured." }, Cmd.none )
@@ -217,18 +223,19 @@ update msg model =
             )
 
         GotTotalSupply (Ok totalSupply) ->
-            case model.contractAddress of
-                Just contractAddr ->
-                    let
-                        cmds =
-                            unfoldr (zeroToUntil totalSupply) (BigInt.fromInt 0)
-                            |> List.map (callTokenByIndex model.provider contractAddr)
+            let
+                cmds =
+                    unfoldr (zeroToUntil totalSupply) (BigInt.fromInt 0)
+                    |> List.map callTokenByIndex
 
-                    in
-
-                    ( { model | totalSupply = Just totalSupply, mintedTokenIds = [] }, Cmd.batch cmds )
-                Nothing ->
-                    ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+                updateModel m =
+                    { m
+                    | message = ""
+                    , totalSupply = Just totalSupply
+                    , mintedTokenIds = []
+                    }
+            in
+            callContract model cmds updateModel
 
         GotTotalSupply (Err _) ->
             ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
