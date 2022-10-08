@@ -128,7 +128,7 @@ callTokenByIndex index =
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
-    if BigInt.gte max n then
+    if BigInt.gt max n then
         Just (n, BigInt.add n (BigInt.fromInt 1))
     else
         Nothing
@@ -278,7 +278,7 @@ view model =
         emojiList =
             case (model.totalSupply, model.maxSupply) of
                 (Just totalSupply, Just maxSupply) ->
-                    unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 1)
+                    unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 0)
                     |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
                 _ ->
                     []

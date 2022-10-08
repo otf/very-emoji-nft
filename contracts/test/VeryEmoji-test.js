@@ -21,27 +21,27 @@ describe("VeryEmoji contract", function () {
       expect(await token721.symbol()).to.equal("EMOJI");
     });
 
-    it("Should mint a token with token ID 1 & 2 to account1", async function () {
+    it("Should mint a token with token ID 0 & 1 to account1", async function () {
       const address1=account1.address;
+      await token721.connect(account1).mint(0);
+      expect(await token721.ownerOf(0)).to.equal(address1);
+
       await token721.connect(account1).mint(1);
       expect(await token721.ownerOf(1)).to.equal(address1);
-
-      await token721.connect(account1).mint(2);
-      expect(await token721.ownerOf(2)).to.equal(address1);
 
       expect(await token721.balanceOf(address1)).to.equal(2);      
     });
 
     it("Should have a tokenURI", async function () {
+      expect(await token721.tokenURI(0)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/0.json");
       expect(await token721.tokenURI(1)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/1.json");
-      expect(await token721.tokenURI(2)).to.equal("ipfs://QmarZTMidah5GKmDHrH8V4w5XBh6goid1YMqpo6XTrgVPy/2.json");
     });
 
     it("Should be able to mint until the maxSupply", async function () {
       const address1 = account1.address;
       const maxSupply = await token721.maxSupply();
 
-      for (i = 1; i <= maxSupply; i++) {
+      for (i = 0; i < maxSupply; i++) {
         await token721.connect(account1).mint(i);
       }
 
@@ -52,11 +52,11 @@ describe("VeryEmoji contract", function () {
       const address1 = account1.address;
       const maxSupply = await token721.maxSupply();
 
-      for (i = 1; i <= maxSupply; i++) {
+      for (i = 0; i < maxSupply; i++) {
         await token721.connect(account1).mint(i);
       }
 
-      await expect(token721.connect(account1).mint(maxSupply + 1)).to.be.reverted;
+      await expect(token721.connect(account1).mint(maxSupply)).to.be.reverted;
     });
 
     it("Should has no totalSupply just after the contract created.", async function () {
@@ -67,7 +67,7 @@ describe("VeryEmoji contract", function () {
       const address1 = account1.address;
       const mintAmount = 3;
 
-      for (i = 1; i <= mintAmount; i++) {
+      for (i = 0; i < mintAmount; i++) {
         await token721.connect(account1).mint(i);
       }
 

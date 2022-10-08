@@ -29,7 +29,7 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
      * @param _tokenId of the token
      */
     function mint(uint256 _tokenId) public {
-        require(_tokenId <= _maxSupply);
+        require(_tokenId < _maxSupply);
         _mint(msg.sender, _tokenId);
     }
 
