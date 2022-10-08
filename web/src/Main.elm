@@ -77,7 +77,7 @@ init networkId =
             Net.toNetworkId networkId
                 |> toProvider
     in
-    ( { message = Just Messages.pleaseConnectWallet
+    ( { message = Messages.pleaseConnectWallet
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
       , contractAddress = Nothing
       , walletAddress = Nothing
@@ -146,7 +146,7 @@ callContract model callList updateModel =
             ( updateModel model, batch )
 
         Nothing ->
-            ( { model | message = Just "Contract Error" }, Cmd.none )
+            ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -178,8 +178,8 @@ update msg model =
                         ]
                     )
 
-                Err message ->
-                    ( { model | message = Just message }, Cmd.none )
+                Err detailMessage ->
+                    ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
         Mint tokenId ->
             case ( model.walletAddress, model.contractAddress, model.totalSupply ) of
@@ -191,19 +191,19 @@ update msg model =
                     ( { model | txSentry = newTxSentry }, mintCmd )
 
                 _ ->
-                    ( { model | message = Just "Fetching the contract error has occured." }, Cmd.none )
+                    ( { model | message = Messages.errorOfFetchContract }, Cmd.none )
 
         GotMint (Ok tx) ->
             let
                 updateModel m =
                     { m
-                    | message = Just <| "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
+                    | message = Messages.successOfMint tx.hash
                     }
             in
             callContract model [ callTotalSupply ] updateModel
 
-        GotMint (Err _) ->
-            ( { model | message = Just "Minting error has occured." }, Cmd.none )
+        GotMint (Err detailMessage) ->
+            ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
         GotWalletStatus walletSentry_ ->
             let
@@ -213,7 +213,7 @@ update msg model =
                             Nothing
 
                         Nothing ->
-                            Just "Please connect your wallet."
+                            Messages.pleaseConnectWallet
             in
             ( { model
                 | walletAddress = walletSentry_.account
@@ -252,8 +252,8 @@ update msg model =
         GotTokenByIndex (Err _) ->
             ( model, Cmd.none )
 
-        GotFail message ->
-            ( { model | message = Just message }, Cmd.none )
+        GotFail detailMessage ->
+            ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
 
 toProvider : NetworkId -> HttpProvider
