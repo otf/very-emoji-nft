@@ -275,17 +275,13 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
-        totalSupply =
-            model.totalSupply
-            |> Maybe.withDefault (BigInt.fromInt 0)
-
-        maxSupply =
-            model.maxSupply
-            |> Maybe.withDefault (BigInt.fromInt 0)
-
         emojiList =
-            unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 1)
-            |> List.map (viewEmoji Mint (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
+            case (model.totalSupply, model.maxSupply) of
+                (Just totalSupply, Just maxSupply) ->
+                    unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 1)
+                    |> List.map (viewEmoji Mint (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
+                _ ->
+                    []
     in
     Layout.viewLayout
         <|
