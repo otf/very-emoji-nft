@@ -165,7 +165,7 @@ update msg model =
         FetchContract ->
             let
                 contractAddress =
-                    EthUtils.toAddress "0x0a76Eb09d6ae4e7df12C670b8eF336FcBf03F8dE"
+                    EthUtils.toAddress "0x809321C75C1b8552fC29f995B9eDb2FB25D174f3"
             in
             case contractAddress of
                 Ok contractAddr ->
