@@ -20,6 +20,7 @@ import Html exposing (Html)
 import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
 import Layout
+import Messages
 import Task as Task exposing (attempt, perform)
 import List.Extra exposing (unfoldr)
 
@@ -45,7 +46,7 @@ subscriptions model =
 
 
 type alias Model =
-    { message : String
+    { message : Maybe String
     , txSentry : TxSentry Msg
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
@@ -76,7 +77,7 @@ init networkId =
             Net.toNetworkId networkId
                 |> toProvider
     in
-    ( { message = "Please connect your wallet."
+    ( { message = Just Messages.pleaseConnectWallet
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
       , contractAddress = Nothing
       , walletAddress = Nothing
@@ -145,7 +146,7 @@ callContract model callList updateModel =
             ( updateModel model, batch )
 
         Nothing ->
-            ( { model | message = "Contract Error" }, Cmd.none )
+            ( { model | message = Just "Contract Error" }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -178,7 +179,7 @@ update msg model =
                     )
 
                 Err message ->
-                    ( { model | message = message }, Cmd.none )
+                    ( { model | message = Just message }, Cmd.none )
 
         Mint tokenId ->
             case ( model.walletAddress, model.contractAddress, model.totalSupply ) of
@@ -190,29 +191,29 @@ update msg model =
                     ( { model | txSentry = newTxSentry }, mintCmd )
 
                 _ ->
-                    ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+                    ( { model | message = Just "Fetching the contract error has occured." }, Cmd.none )
 
         GotMint (Ok tx) ->
             let
                 updateModel m =
                     { m
-                    | message = "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
+                    | message = Just <| "You got a NFT!: " ++ EthUtils.txHashToString tx.hash
                     }
             in
             callContract model [ callTotalSupply ] updateModel
 
         GotMint (Err _) ->
-            ( { model | message = "Minting error has occured." }, Cmd.none )
+            ( { model | message = Just "Minting error has occured." }, Cmd.none )
 
         GotWalletStatus walletSentry_ ->
             let
                 message =
                     case walletSentry_.account of
                         Just _ ->
-                            ""
+                            Nothing
 
                         Nothing ->
-                            "Please connect your wallet."
+                            Just "Please connect your wallet."
             in
             ( { model
                 | walletAddress = walletSentry_.account
@@ -230,30 +231,29 @@ update msg model =
 
                 updateModel m =
                     { m
-                    | message = ""
-                    , totalSupply = Just totalSupply
+                    | totalSupply = Just totalSupply
                     , mintedTokenIds = []
                     }
             in
             callContract model cmds updateModel
 
         GotTotalSupply (Err _) ->
-            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+            ( model, Cmd.none )
 
         GotMaxSupply (Ok maxSupply) ->
             ( { model | maxSupply = Just maxSupply }, Cmd.none )
 
         GotMaxSupply (Err _) ->
-            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+            ( model, Cmd.none )
 
         GotTokenByIndex (Ok tokenId) ->
             ( { model | mintedTokenIds = tokenId :: model.mintedTokenIds }, Cmd.none )
 
         GotTokenByIndex (Err _) ->
-            ( { model | message = "Fetching the contract error has occured." }, Cmd.none )
+            ( model, Cmd.none )
 
         GotFail message ->
-            ( { model | message = message }, Cmd.none )
+            ( { model | message = Just message }, Cmd.none )
 
 
 toProvider : NetworkId -> HttpProvider
@@ -292,6 +292,7 @@ view model =
             { connectWalletButton = viewConnectWalletButton model.walletAddress ConnectWallet
             , jumbotron = viewJumbotron
             , gallery = viewGallery emojiList
+            , message = model.message
             }
 
 

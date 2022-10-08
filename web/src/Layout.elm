@@ -62,24 +62,48 @@ viewLogo attrs enabled =
         }
 
 
-viewHeader : Element msg -> Bool -> Element msg
-viewHeader connectWalletButton enabled =
-    wrappedRow
+viewNotificationBar : Maybe String -> Element msg
+viewNotificationBar message =
+    case message of
+        Just strMessage ->
+          el
+             [ width fill
+             , padding 16
+             , centerX
+             , color (rgb255 250 250 250)
+             , Font.color (rgb255 115 115 115)
+             , Font.bold
+             , Font.size 16
+             , Border.rounded 8
+             , Border.color (rgb255 115 115 115)
+             , Border.width 3
+             ]
+             <| paragraph [] [text strMessage]
+        Nothing ->
+              Element.none
+
+viewHeader : (Element msg -> Element msg) -> Element msg -> Maybe String -> Bool -> Element msg
+viewHeader wrapContainer connectWalletButton message enabled =
+    column
         [ width fill
-        , padding 32
-        , spacingXY 64 32
-        , ColorSchemes.headerBackgroundColor
-        , transparent <| not enabled
         ]
-        [ viewLogo [ width (fillPortion 1) ] enabled
-        , el [ width (fillPortion 6), height (px 0) ] Element.none
-        , el
-            [ width (fillPortion 1 |> maximum 480)
-            , height shrink
-            , alignRight
-            ]
-            connectWalletButton
-        ]
+        ([ wrappedRow
+              [ width fill
+              , padding 32
+              , spacingXY 64 32
+              , ColorSchemes.headerBackgroundColor
+              , transparent <| not enabled
+              ]
+              [ viewLogo [ width (fillPortion 1) ] enabled
+              , el [ width (fillPortion 6), height (px 0) ] Element.none
+              , el
+                  [ width (fillPortion 1 |> maximum 480)
+                  , height shrink
+                  , alignRight
+                  ]
+                  connectWalletButton
+              ]
+        ] ++ (if enabled then [wrapContainer <| viewNotificationBar message] else []))
 
 
 viewSocialLink : String -> String -> String -> Element msg
@@ -115,12 +139,13 @@ type alias Layout msg =
     { connectWalletButton : Element msg
     , jumbotron : (Element msg -> Element msg) -> Element msg
     , gallery : (Element msg -> Element msg) -> Element msg
+    , message : Maybe String
     }
 
 viewLayout : Layout msg -> Html msg
-viewLayout { connectWalletButton, jumbotron, gallery } =
+viewLayout { connectWalletButton, jumbotron, gallery, message } =
     let
-        header = viewHeader connectWalletButton
+        header = viewHeader (container []) connectWalletButton message
     in
     layout
         [ width (fill |> minimum 360)
