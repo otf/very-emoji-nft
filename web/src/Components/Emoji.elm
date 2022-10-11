@@ -9,10 +9,16 @@ import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 import Eth.Types exposing (Address)
+import String exposing (padLeft)
 
 imageUrl : BigInt -> String
 imageUrl tokenId =
-    "https://ipfs.io/ipfs/QmNpH56esUre1Rn4VtouhwniU1JdNegvq8qfDQZivUVb2c/1.svg"
+    let
+        strTokenId =
+            BigInt.toString tokenId |> padLeft 3 '0'
+    in
+    "https://ipfs.io/ipfs/Qmb8bCN7Y2BCB3itSR8e7PJRHjfm9JW1JsGSDa88UCypNx/" ++ strTokenId ++ ".svg"
+
 
 viewIpfsImage : BigInt -> Element msg
 viewIpfsImage tokenId =

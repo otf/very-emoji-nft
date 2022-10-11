@@ -97,11 +97,6 @@ mint sentry from contract tokenId =
         |> TxSentry.send GotMint sentry
 
 
-imageUrl : BigInt -> String
-imageUrl tokenId =
-    "http://localhost:8080/ipfs/QmU8iCM7QYECrWtWjKUN6QZcu6Z4Se9gM1CjDtsUAVc4AX/" ++ BigInt.toString tokenId ++ ".svg"
-
-
 type alias Call =
     HttpProvider -> Address -> Cmd Msg
 
