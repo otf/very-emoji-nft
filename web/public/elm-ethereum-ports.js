@@ -30,14 +30,23 @@ export function walletSentry(toElm, web3) {
 
 // Helper function that calls out to web3 for account/network
 function attachChainChanged(web3, toElm) {
-    var handleChanged = function () {
-        toElm.send( {account: web3.selectedAddress, networkId: parseInt(web3.chainId)} );
+    let chainId = parseInt(web3.chainId ?? -1);
+    let selectedAddress = web3.selectedAddress;
+
+    toElm.send( {account: selectedAddress, networkId: chainId} );
+
+    var handleChainChanged = function (newChainId) {
+        chainId = parseInt(newChainId);
+        toElm.send( {account: selectedAddress, networkId: chainId} );
     }
 
-    handleChanged(); // Make initial call for data.
+    var handleAccountsChanged = function (accounts) {
+        selectedAddress = accounts[0];
+        toElm.send( {account: selectedAddress, networkId: chainId} );
+    }
 
-    web3.on('chainChanged', handleChanged);
-    web3.on('accountsChanged', handleChanged);
+    web3.on('chainChanged', handleChainChanged);
+    web3.on('accountsChanged', handleAccountsChanged);
 }
 
 // Logging Helpers
