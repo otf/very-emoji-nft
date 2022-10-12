@@ -37,7 +37,7 @@ viewJumbotron wrapContainer =
                       [ Font.size 24
                       , paddingXY 0 32
                       ]
-                      [ text "Very Emojiは、NFTアーティストの@sizuku_ethが練習として制作したフリーミントNFT(ERC-721準拠)です。"
+                      [ text "Very Emojiは、駆け出しNFTアーティストの@sizuku_ethが練習として制作したフリーミントNFT(ERC-721準拠)です。"
                       ]
                   , paragraph
                       [ Region.heading 3
