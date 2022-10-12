@@ -33,23 +33,36 @@ viewJumbotron wrapContainer =
                       [ text "フリーミントNFT"
                       , text "『Very Emoji』"
                       ]
-                  , paragraph 
-                      [ Font.size 24 
+                  , paragraph
+                      [ Font.size 24
                       , paddingXY 0 32
                       ]
                       [ text "Very Emojiは、NFTアーティストの@sizuku_ethが練習として制作したフリーミントNFT(ERC-721準拠)です。"
                       ]
-                  , paragraph [ Font.size 16 ]
-                      [ text "* ミント代はかかりませんが、ガス代のイーサ(ETH)は別途必要です。"
+                  , paragraph
+                      [ Region.heading 3
+                      , Font.size 16
+                      , Font.bold
+                      , paddingXY 0 8
+                      ]
+                      [ text "注意事項"
                       ]
                   , paragraph [ Font.size 16 ]
-                      [ text "* ミントに必要なWL(ウェイトリスト)はありません。"
+                      [ text "* ミント代はかからないけど、ガス代は必要だよ。ウォレットにイーサ(ETH)を入れておいてね。"
                       ]
                   , paragraph [ Font.size 16 ]
-                      [ text "* 本作品の公開は、予告なく終了する場合があります。本作品を永続的に使いたい場合は、ご自身でIPFSにPinしてください。"
+                      [ text "* 予告なく公開を終了するかも。ずっと鑑賞したい人は、自分でIPFSにPinしてね。"
                       ]
                   , paragraph [ Font.size 16 ]
-                      [ text "* 本作品は、絵文字をモチーフとしていますが、実際に文字として使用することはできません。"
+                      [ text "* 絵文字がモチーフだけど、実際の文字としては使えないよ。"
+                      ]
+                  , paragraph
+                      [ Region.heading 3
+                      , Font.size 16
+                      , Font.bold
+                      , paddingXY 0 8
+                      ]
+                      [ text "ライセンス"
                       ]
                   , paragraph [ Font.size 16 ]
                       [ text "* @sizuku_ethは、法律上可能な範囲で、Very Emojiの著作権および関連・付随する権利をすべて放棄しています。本作品は、日本から出版されています。"
