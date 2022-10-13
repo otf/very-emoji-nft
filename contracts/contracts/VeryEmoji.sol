@@ -54,7 +54,7 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
      */
     function tokenURI(uint256 _tokenId)
         public
-        view
+        pure
         override
         returns (string memory)
     {
