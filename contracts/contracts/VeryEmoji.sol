@@ -13,6 +13,25 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
     }
 
     /**
+     * @dev Mints a token to msg.sender
+     * @param _tokenId of the token
+     */
+    function mint(uint256 _tokenId) public {
+        require(_tokenId < _maxSupply);
+        _mint(msg.sender, _tokenId);
+        _mintedTokenIds.push(_tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /**
      * @dev returns the maxSupply
      * @return uint256 for the maxSupply
      */
@@ -37,16 +56,6 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
     }
 
     /**
-     * @dev Mints a token to msg.sender
-     * @param _tokenId of the token
-     */
-    function mint(uint256 _tokenId) public {
-        require(_tokenId < _maxSupply);
-        _mint(msg.sender, _tokenId);
-        _mintedTokenIds.push(_tokenId);
-    }
-
-    /**
      * @dev returns the tokenURI for the specified _tokenId
      * @param _tokenId of the token
      * @return string for the tokenURI
@@ -65,14 +74,5 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
         override(ERC721, ERC721Enumerable)
     {
         super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 }
