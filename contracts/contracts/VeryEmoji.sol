@@ -22,6 +22,9 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
         _mintedTokenIds.push(tokenId);
     }
 
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
     function supportsInterface(bytes4 interfaceId)
         public
         view
