@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="640" height="640" preserveAspectRatio="xMinYMin meet" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="640" height="640"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-640)" style="clip-path: url(#clip)">
+		<g transform="">
+			<g transform="">
+				<g transform=" matrix(1,0,0,-1,0,639)">
+					<g transform="">
+						<rect x="0.0" y="0.0" width="640.0" height="639.0" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+					</g>
+					<g transform="">
+						<g transform="">
+							<circle cx="314.68" cy="320.5" r="289.17" style="stroke: rgb(34%,23%,37%); stroke-linecap: butt; stroke-width: 16.0; fill: rgb(100%,85%,47%); fill-rule: evenodd;"/>
+						</g>
+						<circle cx="319.5" cy="320.5" r="300.0" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(80%,80%,80%); fill-rule: evenodd; fill-opacity: 0.19;"/>
+					</g>
+				</g>
+			</g>
+			<g transform="">
+				<g transform=" matrix(1,0,0,-1,0,639)">
+					<g transform="">
+						<rect x="0.0" y="0.0" width="640.0" height="639.0" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+					</g>
+					<g transform="">
+						<g transform="">
+							<g transform="">
+								<g transform="">
+									<circle cx="445.73" cy="273.46" r="72.99" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(44%,44%,0%); fill-rule: evenodd;"/>
+								</g>
+								<g transform="">
+									<g transform=" matrix(0.352658,-0.935752,0.935752,0.352658,16.06,637.64)">
+										<ellipse cx="468.74" cy="306.6" rx="20.19999999999999" ry="19.69999999999999" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd; fill-opacity: 0.76;"/>
+									</g>
+									<g transform=" matrix(0.800627,-0.599163,0.599163,0.800627,-64.06,308.1)">
+										<ellipse cx="430.47" cy="249.31" rx="50.74000000000001" ry="32.58999999999999" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd; fill-opacity: 0.84;"/>
+									</g>
+								</g>
+							</g>
+							<g transform="">
+								<g transform="">
+									<g transform="">
+										<circle cx="193.27" cy="280.18" r="72.99" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(44%,44%,0%); fill-rule: evenodd;"/>
+									</g>
+								</g>
+								<g transform="">
+									<g transform="">
+										<g transform=" matrix(0.352658,-0.935752,0.935752,0.352658,-156.66,411.4)">
+											<ellipse cx="218.88" cy="318.31" rx="20.19999999999999" ry="19.69999999999999" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd; fill-opacity: 0.76;"/>
+										</g>
+										<g transform=" matrix(0.800627,-0.599163,0.599163,0.800627,-120.88,160.73)">
+											<ellipse cx="180.6" cy="261.01" rx="50.74000000000001" ry="32.59000000000002" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd; fill-opacity: 0.84;"/>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					</g>
+				</g>
+			</g>
+			<g transform="">
+				<g transform=" matrix(1,0,0,-1,0,639)">
+					<g transform="">
+						<rect x="0.0" y="0.0" width="640.0" height="639.0" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+					</g>
+					<g transform="">
+						<g transform="">
+							<g transform=" matrix(1,0,0,1,-0.5,0.5)">
+								<g transform="">
+									<path d="M 405 190.54 C 396.0345 190.5336 387.105067 189.404823 378.42 187.18 C 375.813216 186.517258 374.237258 183.866784 374.9 181.26 C 375.562742 178.653216 378.213216 177.077258 380.82 177.74 C 418.21 187.23 457.05 174.45 499.56 138.66 C 501.62982 137.060986 504.592264 137.378132 506.276691 139.379059 C 507.961117 141.379986 507.768512 144.353126 505.84 146.12 C 470.55 175.86 437.31 190.54 405 190.54 Z " style="stroke: rgb(45%,45%,45%); stroke-linecap: butt; stroke-width: 7.0; fill: rgb(45%,45%,45%); fill-rule: evenodd;"/>
+								</g>
+							</g>
+							<g transform=" matrix(1,0,0,1,-0.5,0.5)">
+								<g transform="">
+									<path d="M 225.33 190.54 C 193.05 190.54 159.82 175.86 124.49 146.12 C 123.071637 145.024261 122.368073 143.239187 122.657413 141.470379 C 122.946753 139.701572 124.182427 138.233716 125.876001 137.647025 C 127.569574 137.060334 129.44847 137.449233 130.77 138.66 C 173.28 174.45 212.12 187.23 249.51 177.74 C 252.116784 177.077258 254.767258 178.653216 255.43 181.26 C 256.092742 183.866784 254.516784 186.517258 251.91 187.18 C 243.225169 189.406064 234.29558 190.53486 225.33 190.54 Z " style="stroke: rgb(45%,45%,45%); stroke-linecap: butt; stroke-width: 7.0; fill: rgb(45%,45%,45%); fill-rule: evenodd;"/>
+								</g>
+							</g>
+						</g>
+					</g>
+				</g>
+			</g>
+			<g transform="">
+				<g transform=" matrix(1,0,0,-1,0,639)">
+					<g transform="">
+						<rect x="0.0" y="0.0" width="640.0" height="639.0" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: none; fill-rule: evenodd;"/>
+					</g>
+					<g transform="">
+						<g transform="">
+							<g transform=" matrix(1,0,0,1,-0.5,0.5)">
+								<g transform="">
+									<path d="M 457.14 432.94 C 457.14 499.3 419.68 531.25 384.88 532.88 C 383.97 532.88 383.02 532.97 382.07 532.97 C 376.729495 532.954866 371.412915 532.255847 366.25 530.89 C 348.25 526.13 331.25 513.2 320.14 492.24 C 320.083377 492.166239 320.036335 492.085596 320 492 L 320 491.95 C 313 478.72 308.26 462.26 307.1 442.63 L 307.1 442.45 C 307.1 442.05 307.03 441.66 307.03 441.21 C 306.93 439.27 306.86 437.21 306.86 435.21 C 306.86 434.5 306.86 433.75 306.86 433 C 306.86 425.59 310.86 419.46 316.24 417.61 C 316.24 417.56 316.24 417.56 316.31 417.56 L 317.16 417.3 C 318.00991 417.086264 318.883662 416.982085 319.76 416.99 C 326.86 416.99 332.59 424.31 332.69 433.18 L 332.69 434.59 C 332.69 436.53 332.76 438.47 332.86 440.28 C 332.86 440.59 332.86 440.95 332.93 441.28 L 333.04 442.61 C 335.5 473.45 349.66 491.05 366.25 497.61 C 371.867754 499.831972 377.896448 500.824252 383.93 500.52 C 407.51 499.42 431.27 478.11 431.27 433.01 C 431.27 424.06 437.07 416.82 444.21 416.82 C 451.35 416.82 457.14 424 457.14 432.94 Z " style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(45%,45%,45%); fill-rule: evenodd;"/>
+								</g>
+							</g>
+							<g transform=" matrix(1,0,0,1,-0.5,0.5)">
+								<g transform="">
+									<path d="M 320.25 416.75 C 319.187778 416.752686 318.132223 416.917932 317.12 417.24 L 316.27 417.5 C 316.27 417.5 316.27 417.5 316.2 417.55 C 311.04 419.66 307.31 425.75 307.31 432.94 L 307.31 433.34 L 307.31 434.53 C 307.31 436.47 307.24 438.41 307.13 440.27 C 307.13 440.58 307.13 440.89 307.06 441.19 C 307.056608 441.574287 307.033243 441.958138 306.99 442.34 C 304.6 473.09 290.58 490.79 274.06 497.41 C 268.356164 499.730521 262.208122 500.755195 256.06 500.41 C 232.48 499.31 208.68 478 208.68 432.9 C 208.68 423.95 202.92 416.71 195.78 416.71 C 188.64 416.71 182.85 423.95 182.85 432.9 C 182.85 499.26 220.28 531.21 255.07 532.84 C 256.02 532.84 256.97 532.93 257.89 532.93 C 263.330236 532.940623 268.747725 532.227707 274 530.81 C 292 526 308.89 513 320 492 L 320 491.95 C 320.05257 491.866644 320.099347 491.779773 320.14 491.69 C 327.06 478.5 331.7 462.17 332.86 442.69 C 332.86 442.21 332.93 441.69 332.93 441.23 C 333.04 439.29 333.11 437.23 333.11 435.23 C 333.11 434.52 333.18 433.77 333.18 433.02 C 333.18 424 327.38 416.75 320.25 416.75 Z " style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(45%,45%,45%); fill-rule: evenodd;"/>
+								</g>
+							</g>
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>
