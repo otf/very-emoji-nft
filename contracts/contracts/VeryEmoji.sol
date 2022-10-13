@@ -37,7 +37,7 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
      */
     function maxSupply() 
         public
-        view
+        pure
         returns (uint256)
     {
         return MAX_SUPPLY;
