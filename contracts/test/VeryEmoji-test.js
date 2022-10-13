@@ -73,5 +73,37 @@ describe("VeryEmoji contract", function () {
 
       expect(await token721.totalSupply()).to.equal(mintAmount);
     });
+
+    it("Should has mintedTokenIds is empty while no minting.", async function () {
+      const address1 = account1.address;
+
+      expect(await token721.mintedTokenIds()).to.eql([]);
+    });
+
+    it("Should has mintedTokenIds is [0] after minting #0.", async function () {
+      const address1 = account1.address;
+      await token721.connect(account1).mint(0);
+
+      expect(await token721.mintedTokenIds()).to.eql([ethers.BigNumber.from(0)]);
+    });
+
+    it("Should has mintedTokenIds is [0, 2] after minting #0 and #2.", async function () {
+      const address1 = account1.address;
+      await token721.connect(account1).mint(0);
+      await token721.connect(account1).mint(2);
+
+      expect(await token721.mintedTokenIds()).to.eql([ethers.BigNumber.from(0),ethers.BigNumber.from(2)]);
+    });
+
+    it("Should has mintedTokenIds is [0..(maxSupply-1)] after minting all.", async function () {
+      const address1 = account1.address;
+      const maxSupply = await token721.maxSupply();
+
+      for (i = 0; i < maxSupply; i++) {
+        await token721.connect(account1).mint(i);
+      }
+
+      expect(await token721.mintedTokenIds()).to.eql([...Array(Number(maxSupply)).keys()].map(ethers.BigNumber.from));
+    });
   });
 });

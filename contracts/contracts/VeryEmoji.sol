@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract VeryEmoji is ERC721, ERC721Enumerable {
     uint256 private _maxSupply = 16;
+    uint256[] private _mintedTokenIds;
 
     constructor() ERC721("VeryEmoji", "EMOJI") {
     }
@@ -25,12 +26,25 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
     }
 
     /**
+     * @dev returns the minted TokenId array
+     * @return uint256[] for the minted TokenId array
+     */
+    function mintedTokenIds()
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return _mintedTokenIds;
+    }
+
+    /**
      * @dev Mints a token to msg.sender
      * @param _tokenId of the token
      */
     function mint(uint256 _tokenId) public {
         require(_tokenId < _maxSupply);
         _mint(msg.sender, _tokenId);
+        _mintedTokenIds.push(_tokenId);
     }
 
     /**
