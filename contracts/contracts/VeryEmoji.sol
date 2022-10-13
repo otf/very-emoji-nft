@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract VeryEmoji is ERC721, ERC721Enumerable {
-    uint256 private _maxSupply = 16;
+    uint256 private _maxSupply = 88;
     uint256[] private _mintedTokenIds;
 
     constructor() ERC721("VeryEmoji", "EMOJI") {
