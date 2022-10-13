@@ -33,8 +33,8 @@ describe("VeryEmoji contract", function () {
     });
 
     it("Should have a tokenURI", async function () {
-      expect(await token721.tokenURI(0)).to.equal("ipfs://QmNoMCATqP3dbzdjvBPSrDwQ7mzivB9SpEKo7FZd9Un9it/0");
-      expect(await token721.tokenURI(1)).to.equal("ipfs://QmNoMCATqP3dbzdjvBPSrDwQ7mzivB9SpEKo7FZd9Un9it/1");
+      expect(await token721.tokenURI(0)).to.equal("ipfs://QmSxvj2y3ktM8EErNvzfBiUBFDBNRW4GBTomGpvrfM25Td/0");
+      expect(await token721.tokenURI(1)).to.equal("ipfs://QmSxvj2y3ktM8EErNvzfBiUBFDBNRW4GBTomGpvrfM25Td/1");
     });
 
     it("Should be able to mint until the maxSupply", async function () {

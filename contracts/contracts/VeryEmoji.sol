@@ -58,7 +58,7 @@ contract VeryEmoji is ERC721, ERC721Enumerable {
         override
         returns (string memory)
     {
-        return string(abi.encodePacked("ipfs://QmNoMCATqP3dbzdjvBPSrDwQ7mzivB9SpEKo7FZd9Un9it/", Strings.toString(_tokenId)));
+        return string(abi.encodePacked("ipfs://QmSxvj2y3ktM8EErNvzfBiUBFDBNRW4GBTomGpvrfM25Td/", Strings.toString(_tokenId)));
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
