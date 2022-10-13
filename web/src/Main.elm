@@ -51,7 +51,6 @@ type alias Model =
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
     , provider : HttpProvider
-    , totalSupply : Maybe BigInt
     , maxSupply : Maybe BigInt
     , mintedTokenIds : List BigInt
     }
@@ -64,9 +63,8 @@ type Msg
     | Mint BigInt
     | GotMint (Result String Tx)
     | GotWalletStatus WalletSentry
-    | GotTotalSupply (Result Http.Error BigInt)
     | GotMaxSupply (Result Http.Error BigInt)
-    | GotTokenByIndex (Result Http.Error BigInt)
+    | GotMintedTokenIds (Result Http.Error (List BigInt))
     | GotFail String
 
 
@@ -82,7 +80,6 @@ init networkId =
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
-      , totalSupply = Nothing
       , maxSupply = Nothing
       , mintedTokenIds = []
       }
@@ -100,11 +97,11 @@ mint sentry from contract tokenId =
 type alias Call =
     HttpProvider -> Address -> Cmd Msg
 
-callTotalSupply : Call
-callTotalSupply provider contract =
-    VeryEmoji.totalSupply contract
+callMintedTokenIds : Call
+callMintedTokenIds provider contract =
+    VeryEmoji.mintedTokenIds contract
         |> Eth.call provider
-        |> Task.attempt GotTotalSupply
+        |> Task.attempt GotMintedTokenIds
 
 
 callMaxSupply : Call
@@ -112,14 +109,6 @@ callMaxSupply provider contract =
     VeryEmoji.maxSupply contract
         |> Eth.call provider
         |> Task.attempt GotMaxSupply
-
-
-callTokenByIndex : BigInt -> Call
-callTokenByIndex index =
-    \provider contract ->
-        VeryEmoji.tokenByIndex contract index
-            |> Eth.call provider
-            |> Task.attempt GotTokenByIndex
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
@@ -168,8 +157,8 @@ update msg model =
                         | contractAddress = Just contractAddr
                       }
                     , Cmd.batch
-                        [ callTotalSupply model.provider contractAddr
-                        , callMaxSupply model.provider contractAddr
+                        [ callMaxSupply model.provider contractAddr
+                        , callMintedTokenIds model.provider contractAddr
                         ]
                     )
 
@@ -177,8 +166,8 @@ update msg model =
                     ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
         Mint tokenId ->
-            case ( model.walletAddress, model.contractAddress, model.totalSupply ) of
-                ( Just walletAddr, Just contractAddr, Just totalSupply ) ->
+            case ( model.walletAddress, model.contractAddress ) of
+                ( Just walletAddr, Just contractAddr ) ->
                     let
                         ( newTxSentry, mintCmd ) =
                             mint model.txSentry walletAddr contractAddr tokenId
@@ -195,7 +184,7 @@ update msg model =
                     | message = Messages.successOfMint tx.hash
                     }
             in
-            callContract model [ callTotalSupply ] updateModel
+            callContract model [ callMintedTokenIds ] updateModel
 
         GotMint (Err detailMessage) ->
             ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
@@ -218,33 +207,22 @@ update msg model =
             , Cmd.none
             )
 
-        GotTotalSupply (Ok totalSupply) ->
+        GotMintedTokenIds (Ok mintedTokenIds) ->
             let
-                cmds =
-                    unfoldr (zeroToUntil totalSupply) (BigInt.fromInt 0)
-                    |> List.map callTokenByIndex
-
                 updateModel m =
                     { m
-                    | totalSupply = Just totalSupply
-                    , mintedTokenIds = []
+                    | mintedTokenIds = mintedTokenIds
                     }
             in
-            callContract model cmds updateModel
+            callContract model [] updateModel
 
-        GotTotalSupply (Err _) ->
+        GotMintedTokenIds (Err _) ->
             ( model, Cmd.none )
 
         GotMaxSupply (Ok maxSupply) ->
             ( { model | maxSupply = Just maxSupply }, Cmd.none )
 
         GotMaxSupply (Err _) ->
-            ( model, Cmd.none )
-
-        GotTokenByIndex (Ok tokenId) ->
-            ( { model | mintedTokenIds = tokenId :: model.mintedTokenIds }, Cmd.none )
-
-        GotTokenByIndex (Err _) ->
             ( model, Cmd.none )
 
         GotFail detailMessage ->
@@ -271,8 +249,8 @@ view : Model -> Html Msg
 view model =
     let
         emojiList =
-            case (model.totalSupply, model.maxSupply) of
-                (Just totalSupply, Just maxSupply) ->
+            case model.maxSupply of
+                Just maxSupply ->
                     unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 0)
                     |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
                 _ ->

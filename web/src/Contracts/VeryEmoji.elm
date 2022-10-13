@@ -12,6 +12,7 @@ module Contracts.VeryEmoji exposing
     , isApprovedForAll
     , maxSupply
     , mint
+    , mintedTokenIds
     , name
     , ownerOf
     , safeTransferFrom
@@ -137,6 +138,22 @@ mint fromAddress contractAddress tokenId_ =
     , data = Just <| E.functionCall "a0712d68" [ E.uint tokenId_ ]
     , nonce = Nothing
     , decoder = Decode.succeed ()
+    }
+
+
+-- mintedTokenIds() function
+
+
+mintedTokenIds : Address -> Call (List BigInt)
+mintedTokenIds contractAddress =
+    { to = Just contractAddress
+    , from = Nothing
+    , gas = Nothing
+    , gasPrice = Nothing
+    , value = Nothing
+    , data = Just <| E.functionCall "bf4b4ddf" []
+    , nonce = Nothing
+    , decoder = toElmDecoder (D.dynamicArray D.uint)
     }
 
 
