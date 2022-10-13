@@ -9,6 +9,10 @@ const config: HardhatUserConfig = {
   solidity: "0.8.9",
 
   networks: {
+    mainnet: {
+      url: process.env.API_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    },
     mumbai: {
       url: process.env.API_URL,
       accounts: [process.env.PRIVATE_KEY]
