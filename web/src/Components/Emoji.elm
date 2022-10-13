@@ -17,7 +17,7 @@ imageUrl tokenId =
         strTokenId =
             BigInt.toString tokenId |> padLeft 3 '0'
     in
-    "https://ipfs.io/ipfs/Qmb8bCN7Y2BCB3itSR8e7PJRHjfm9JW1JsGSDa88UCypNx/" ++ strTokenId ++ ".svg"
+    "https://ipfs.io/ipfs/QmNMvGKmP4FvR5BTh8m2hok9cUy8dpKVHRXXHvT79EQcdb/" ++ strTokenId ++ ".svg"
 
 
 viewIpfsImage : BigInt -> Element msg
