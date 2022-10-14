@@ -29,4 +29,4 @@ imageUrl tokenId =
         strTokenId =
             BigInt.toString tokenId |> padLeft 3 '0'
     in
-    "https://ipfs.io/ipfs/QmNMvGKmP4FvR5BTh8m2hok9cUy8dpKVHRXXHvT79EQcdb/" ++ strTokenId ++ ".svg"
+    "dist/images/" ++ strTokenId ++ ".svg"
