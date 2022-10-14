@@ -51,7 +51,6 @@ type alias Model =
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
     , provider : HttpProvider
-    , maxSupply : Maybe BigInt
     , mintedTokenIds : List BigInt
     }
 
@@ -63,7 +62,6 @@ type Msg
     | Mint BigInt
     | GotMint (Result String Tx)
     | GotWalletStatus WalletSentry
-    | GotMaxSupply (Result Http.Error BigInt)
     | GotMintedTokenIds (Result Http.Error (List BigInt))
     | GotFail String
 
@@ -80,7 +78,6 @@ init networkId =
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
-      , maxSupply = Nothing
       , mintedTokenIds = []
       }
     , Task.perform (always FetchContract) (Task.succeed ())
@@ -102,13 +99,6 @@ callMintedTokenIds provider contract =
     VeryEmoji.mintedTokenIds contract
         |> Eth.call provider
         |> Task.attempt GotMintedTokenIds
-
-
-callMaxSupply : Call
-callMaxSupply provider contract =
-    VeryEmoji.maxSupply contract
-        |> Eth.call provider
-        |> Task.attempt GotMaxSupply
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
@@ -156,10 +146,7 @@ update msg model =
                     ( { model
                         | contractAddress = Just contractAddr
                       }
-                    , Cmd.batch
-                        [ callMaxSupply model.provider contractAddr
-                        , callMintedTokenIds model.provider contractAddr
-                        ]
+                    , callMintedTokenIds model.provider contractAddr
                     )
 
                 Err detailMessage ->
@@ -219,12 +206,6 @@ update msg model =
         GotMintedTokenIds (Err _) ->
             ( model, Cmd.none )
 
-        GotMaxSupply (Ok maxSupply) ->
-            ( { model | maxSupply = Just maxSupply }, Cmd.none )
-
-        GotMaxSupply (Err _) ->
-            ( model, Cmd.none )
-
         GotFail detailMessage ->
             ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
@@ -248,13 +229,10 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
+        maxSupply = BigInt.fromInt 88
         emojiList =
-            case model.maxSupply of
-                Just maxSupply ->
-                    unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 0)
-                    |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
-                _ ->
-                    []
+            unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 0)
+            |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
     in
     Layout.viewLayout
         <|
