@@ -128,7 +128,12 @@ viewFooter : Element msg
 viewFooter =
     row
         [ width fill
-        , padding 32
+        , paddingEach
+            { top = 0
+            , bottom = 128
+            , left = 0
+            , right = 0
+            }
         , spacing 32
         ]
         [ viewSocialLink "https://twitter.com/sizuku_eth" "images/twitter.svg" "twitter/@sizuku_eth"
