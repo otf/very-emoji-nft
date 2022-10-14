@@ -1,6 +1,7 @@
 module Layout exposing (viewLayout, Layout)
 
 import ColorSchemes
+import Config
 import Element exposing (..)
 import Element.Region as Region
 import Element.Background exposing (color)
@@ -131,7 +132,7 @@ viewFooter =
         , spacing 32
         ]
         [ viewSocialLink "https://twitter.com/sizuku_eth" "images/twitter.svg" "twitter/@sizuku_eth"
-        , viewSocialLink "https://etherscan.io/address/0xTEST" "images/etherscan.svg" "etherscan"
+        , viewSocialLink Config.linkForEtherscan "images/etherscan.svg" "etherscan"
         ]
 
 

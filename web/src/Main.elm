@@ -21,6 +21,7 @@ import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
 import Layout
 import Messages
+import Config
 import Task as Task exposing (attempt, perform)
 import List.Extra exposing (unfoldr)
 
@@ -137,11 +138,7 @@ update msg model =
             ( model, connectWallet () )
 
         FetchContract ->
-            let
-                contractAddress =
-                    EthUtils.toAddress "0xE94215Ee7e25a1aCB58a9D5406db930ee729700b"
-            in
-            case contractAddress of
+            case Config.contractAddress of
                 Ok contractAddr ->
                     ( { model
                         | contractAddress = Just contractAddr
@@ -229,9 +226,8 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
-        maxSupply = BigInt.fromInt 88
         emojiList =
-            unfoldr (zeroToUntil maxSupply) (BigInt.fromInt 0)
+            unfoldr (zeroToUntil Config.maxSupply) (BigInt.fromInt 0)
             |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
     in
     Layout.viewLayout

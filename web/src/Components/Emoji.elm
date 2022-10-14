@@ -3,21 +3,13 @@ module Components.Emoji exposing (viewEmoji)
 import BigInt exposing (BigInt, toString)
 import ColorSchemes
 import Components.MintButton exposing (viewMintButton)
+import Config
 import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 import Eth.Types exposing (Address)
-import String exposing (padLeft)
-
-imageUrl : BigInt -> String
-imageUrl tokenId =
-    let
-        strTokenId =
-            BigInt.toString tokenId |> padLeft 3 '0'
-    in
-    "https://ipfs.io/ipfs/QmNMvGKmP4FvR5BTh8m2hok9cUy8dpKVHRXXHvT79EQcdb/" ++ strTokenId ++ ".svg"
 
 
 viewIpfsImage : BigInt -> Element msg
@@ -26,7 +18,7 @@ viewIpfsImage tokenId =
         [ width fill
         , height fill
         ]
-        { src = imageUrl tokenId
+        { src = Config.imageUrl tokenId
         , description = "Very Emoji No." ++ (toString tokenId)
         }
 
