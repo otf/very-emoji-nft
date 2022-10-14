@@ -34,8 +34,14 @@ viewJumbotron wrapContainer =
                   ]
                   [ paragraph
                       [ Region.heading 2
-                      , Font.bold 
-                      , Font.size 32
+                      , Font.size 48
+                      , Font.family
+                          [ Font.external
+                              { name = "Dela Gothic One"
+                              , url = "https://fonts.googleapis.com/css2?family=Dela+Gothic+One"
+                              }
+                          , Font.sansSerif
+                      ]
                       ] 
                       [ text "フリーミントNFT"
                       , text "『Very Emoji』"
