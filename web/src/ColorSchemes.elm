@@ -25,19 +25,13 @@ jumbotronBackgroundColor =
 jumbotronForegroundColor =
     Font.color <| rgb255 60 60 60
 
-galleryBackgroundColor =
-    color <| rgb255 250 250 250
-
-galleryBorderColor =
-    Border.color <| rgb255 237 210 233
-
 
 emojiForegroundColor =
     Font.color <| rgb255 115 115 115
 
 
 emojiBackgroundColor =
-    color <| rgb255 230 230 230
+    color <| rgb255 255 255 255
 
 
 emojiBorderColor =

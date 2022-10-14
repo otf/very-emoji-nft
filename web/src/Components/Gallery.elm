@@ -19,11 +19,6 @@ viewGallery emojiList wrapContainer =
                 <|
                     wrappedRow
                         [ width fill
-                        , ColorSchemes.galleryBackgroundColor
-                        , Border.width 2
-                        , Border.rounded 16
-                        , ColorSchemes.galleryBorderColor
-                        , padding 24
                         , spacing 24
                         ]
                         emojiList
