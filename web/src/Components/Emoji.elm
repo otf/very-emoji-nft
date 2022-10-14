@@ -27,8 +27,15 @@ viewTokenId tokenId =
     el
       [ Region.heading 3
       , paddingXY 0 8
-      , Font.size 20
+      , Font.size 24
       , Font.bold
+      , Font.family
+          [ Font.external
+              { name = "DotGothic16"
+              , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
+              }
+          , Font.sansSerif
+          ]
       ]
       <|
           text ("Very Emoji " ++ "#" ++ (toString tokenId))
