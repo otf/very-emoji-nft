@@ -24,6 +24,7 @@ import Messages
 import Config
 import Task as Task exposing (attempt, perform)
 import List.Extra exposing (unfoldr)
+import Time
 
 
 port walletSentry : (Decode.Value -> msg) -> Sub msg
@@ -43,6 +44,7 @@ subscriptions model =
     Sub.batch
         [ walletSentry (WalletSentry.decodeToMsg GotFail GotWalletStatus)
         , TxSentry.listen model.txSentry
+        , Time.every 1000 (always FetchContract)
         ]
 
 
