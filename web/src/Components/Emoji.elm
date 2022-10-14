@@ -17,6 +17,7 @@ viewIpfsImage tokenId =
     image
         [ width fill
         , height fill
+        , padding 16
         ]
         { src = Config.imageUrl tokenId
         , description = "Very Emoji No." ++ (toString tokenId)
@@ -44,7 +45,7 @@ viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> (BigInt -> B
 viewEmoji msg walletAddress isMinted isLoading tokenId =
     el
         [ Border.width 2
-        , Border.rounded 16
+        , Border.rounded 8
         , ColorSchemes.emojiBackgroundColor
         , ColorSchemes.emojiBorderColor
         , ColorSchemes.emojiForegroundColor
