@@ -27,11 +27,11 @@ viewTokenId tokenId =
     el
       [ Region.heading 3
       , paddingXY 0 8
-      , Font.size 24
+      , Font.size 20
       , Font.bold
       ]
       <|
-          text ("#" ++ (toString tokenId))
+          text ("Very Emoji " ++ "#" ++ (toString tokenId))
 
 viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> BigInt -> Element msg
 viewEmoji msg walletAddress isMinted tokenId =
