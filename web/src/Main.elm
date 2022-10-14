@@ -55,6 +55,7 @@ type alias Model =
     , walletAddress : Maybe Address
     , provider : HttpProvider
     , mintedTokenIds : List BigInt
+    , mintingTokenIds : List BigInt
     }
 
 
@@ -63,7 +64,7 @@ type Msg
     | ConnectWallet
     | FetchContract
     | Mint BigInt
-    | GotMint (Result String Tx)
+    | GotMint BigInt (Result String Tx)
     | GotWalletStatus WalletSentry
     | GotMintedTokenIds (Result Http.Error (List BigInt))
     | GotFail String
@@ -82,6 +83,7 @@ init networkId =
       , walletAddress = Nothing
       , provider = provider
       , mintedTokenIds = []
+      , mintingTokenIds = []
       }
     , Task.perform (always FetchContract) (Task.succeed ())
     )
@@ -91,7 +93,7 @@ mint : TxSentry Msg -> Address -> Address -> BigInt -> ( TxSentry Msg, Cmd Msg )
 mint sentry from contract tokenId =
     VeryEmoji.mint from contract tokenId
         |> Eth.toSend
-        |> TxSentry.send GotMint sentry
+        |> TxSentry.send (GotMint tokenId) sentry
 
 
 type alias Call =
@@ -158,22 +160,26 @@ update msg model =
                         ( newTxSentry, mintCmd ) =
                             mint model.txSentry walletAddr contractAddr tokenId
                     in
-                    ( { model | txSentry = newTxSentry }, mintCmd )
+                    ( { model | txSentry = newTxSentry, mintingTokenIds = tokenId :: model.mintingTokenIds }, mintCmd )
 
                 _ ->
                     ( { model | message = Messages.errorOfFetchContract }, Cmd.none )
 
-        GotMint (Ok tx) ->
+        GotMint tokenId (Ok tx) ->
             let
                 updateModel m =
                     { m
                     | message = Messages.successOfMint tx.hash
+                    , mintingTokenIds = List.filter ((/=) tokenId) m.mintingTokenIds
                     }
             in
             callContract model [ callMintedTokenIds ] updateModel
 
-        GotMint (Err detailMessage) ->
-            ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
+        GotMint tokenId (Err detailMessage) ->
+            ( { model
+                | message = Messages.unknownError detailMessage
+                , mintingTokenIds = List.filter ((/=) tokenId) model.mintingTokenIds
+            }, Cmd.none )
 
         GotWalletStatus walletSentry_ ->
             let
@@ -230,7 +236,13 @@ view model =
     let
         emojiList =
             unfoldr (zeroToUntil Config.maxSupply) (BigInt.fromInt 0)
-            |> List.map (viewEmoji Mint model.walletAddress (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds))
+            |> List.map (
+                viewEmoji
+                    Mint
+                    model.walletAddress
+                    (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds)
+                    (\tokenId -> List.any ((==) tokenId) model.mintingTokenIds)
+                )
     in
     Layout.viewLayout
         <|

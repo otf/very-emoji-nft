@@ -40,8 +40,8 @@ viewTokenId tokenId =
       <|
           text ("Very Emoji " ++ "#" ++ (toString tokenId))
 
-viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> BigInt -> Element msg
-viewEmoji msg walletAddress isMinted tokenId =
+viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> (BigInt -> Bool) -> BigInt -> Element msg
+viewEmoji msg walletAddress isMinted isLoading tokenId =
     el
         [ Border.width 2
         , Border.rounded 16
@@ -58,5 +58,5 @@ viewEmoji msg walletAddress isMinted tokenId =
                 ]
                 [ viewTokenId tokenId
                 , viewIpfsImage tokenId
-                , viewMintButton (msg tokenId) walletAddress (isMinted tokenId)
+                , viewMintButton (msg tokenId) walletAddress (isMinted tokenId) (isLoading tokenId)
                 ]
