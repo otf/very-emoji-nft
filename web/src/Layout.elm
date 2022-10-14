@@ -4,7 +4,7 @@ import ColorSchemes
 import Config
 import Element exposing (..)
 import Element.Region as Region
-import Element.Background exposing (color)
+import Element.Background as Background exposing (color)
 import Element.Border as Border
 import Element.Font as Font
 import Html exposing (Html)
@@ -135,6 +135,7 @@ viewFooter =
             , right = 0
             }
         , spacing 32
+        , ColorSchemes.backgroundColor
         ]
         [ viewSocialLink "https://twitter.com/sizuku_eth" "images/twitter.svg" "twitter/@sizuku_eth"
         , viewSocialLink Config.linkForEtherscan "images/etherscan.svg" "etherscan"
@@ -162,6 +163,7 @@ viewLayout { connectWalletButton, jumbotron, gallery, message } =
         column
             [ width fill
             , ColorSchemes.backgroundColor
+            , Background.tiled "images/background.svg"
             ]
             [ header False
             , jumbotron (container [])
