@@ -17,7 +17,6 @@ viewIpfsImage tokenId =
     image
         [ width fill
         , height fill
-        , padding 16
         ]
         { src = Config.imageUrl tokenId
         , description = "Very Emoji No." ++ (toString tokenId)
@@ -58,6 +57,10 @@ viewEmoji msg walletAddress isMinted isLoading tokenId =
                 , padding 16
                 ]
                 [ viewTokenId tokenId
-                , viewIpfsImage tokenId
+                , row []
+                    [ el [ width <| fillPortion 1 ] Element.none
+                    , el [ width <| fillPortion 6 ] <| viewIpfsImage tokenId
+                    , el [ width <| fillPortion 1 ] Element.none
+                    ]
                 , viewMintButton (msg tokenId) walletAddress (isMinted tokenId) (isLoading tokenId)
                 ]
