@@ -17,7 +17,7 @@ viewIpfsImage : BigInt -> Element msg
 viewIpfsImage tokenId =
     image
         [ width fill
-        , height fill
+        , height (fill |> minimum 126)
         ]
         { src = Config.imageUrl tokenId
         , description = "Very Emoji No." ++ (toString tokenId)
@@ -49,6 +49,7 @@ viewEmoji msg walletAddress isMinted isLoading tokenId =
         , Border.width 3
         , htmlAttribute <| RawAttrs.style "border-color" "#c0c0c0 #000 #c0c0c0 #000 #c0c0c0"
         , width (fill |> minimum 198)
+        , height (fill |> minimum 274)
         ]
         <|
             column
