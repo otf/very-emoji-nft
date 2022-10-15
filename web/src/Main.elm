@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import BigInt exposing (BigInt)
 import Browser
-import Components.ConnectWalletButton exposing (viewConnectWalletButton)
+import Components.ConnectWalletButton as ConnectWalletButton
 import Components.Jumbotron exposing (viewJumbotron)
 import Components.Gallery exposing (viewGallery)
 import Components.Emoji exposing (viewEmoji)
@@ -56,6 +56,7 @@ type alias Model =
     , provider : HttpProvider
     , mintedTokenIds : List BigInt
     , mintingTokenIds : List BigInt
+    , connectWalletButtonModel : ConnectWalletButton.Model Msg
     }
 
 
@@ -68,6 +69,7 @@ type Msg
     | GotWalletStatus WalletSentry
     | GotMintedTokenIds (Result Http.Error (List BigInt))
     | GotFail String
+    | ConnectWalletButtonSpecific ConnectWalletButton.Msg
 
 
 init : Int -> ( Model, Cmd Msg )
@@ -84,6 +86,7 @@ init networkId =
       , provider = provider
       , mintedTokenIds = []
       , mintingTokenIds = []
+      , connectWalletButtonModel = ConnectWalletButton.init ConnectWallet
       }
     , Task.perform (always FetchContract) (Task.succeed ())
     )
@@ -214,6 +217,12 @@ update msg model =
         GotFail detailMessage ->
             ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
 
+        ConnectWalletButtonSpecific subMsg ->
+            ({ model
+            | connectWalletButtonModel =
+                ConnectWalletButton.update subMsg model.connectWalletButtonModel
+            }, Cmd.none)
+
 
 toProvider : NetworkId -> HttpProvider
 toProvider networkId =
@@ -246,7 +255,8 @@ view model =
     in
     Layout.viewLayout
         <|
-            { connectWalletButton = viewConnectWalletButton model.walletAddress ConnectWallet
+            { connectWalletButton =
+                ConnectWalletButton.view model.connectWalletButtonModel ConnectWalletButtonSpecific model.walletAddress
             , jumbotron = viewJumbotron
             , gallery = viewGallery emojiList
             , message = model.message

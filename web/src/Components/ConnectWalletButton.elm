@@ -1,4 +1,4 @@
-module Components.ConnectWalletButton exposing (viewConnectWalletButton)
+module Components.ConnectWalletButton exposing (view, init, update, Model, Msg(..))
 
 import ColorSchemes
 import Element exposing (..)
@@ -7,12 +7,61 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
+import Element.Events as Events
 import Eth.Types exposing (Address)
 import Eth.Utils exposing (addressToString)
 
 
-viewConnectWalletButton : Maybe Address -> msg -> Element msg
-viewConnectWalletButton walletAddress msg =
+type ButtonState
+    = Default
+    | Pressed
+
+
+type alias Model msg =
+    { state : ButtonState
+    , isHover : Bool
+    , onPress : msg
+    }
+
+
+type Msg
+    = OnMouseDown
+    | OnMouseUp
+    | OnMouseEnter
+    | OnMouseLeave
+
+
+init : msg -> Model msg
+init msg =
+    { state = Default
+    , isHover = False
+    , onPress = msg
+    }
+
+
+update : Msg -> Model msg -> Model msg
+update msg model =
+    case msg of
+        OnMouseDown ->
+            { model
+            | state = Pressed
+            }
+        OnMouseUp ->
+            { model
+            | state = Default
+            }
+        OnMouseEnter ->
+            { model
+            | isHover = True
+            }
+        OnMouseLeave ->
+            { model
+            | isHover = False
+            }
+
+
+view : Model msg -> (Msg -> msg) -> Maybe Address -> Element msg
+view model toMsg walletAddress =
     let
         buttonText =
             case walletAddress of
@@ -26,7 +75,7 @@ viewConnectWalletButton walletAddress msg =
                     "ウォレットを接続"
     in
     Input.button
-        [ padding 12
+        ([ padding 12
         , width fill
         , Font.center
         , Font.size 16
@@ -43,16 +92,39 @@ viewConnectWalletButton walletAddress msg =
         , Border.color <| rgb255 166 43 113
         , ColorSchemes.buttonForegroundColor
         , ColorSchemes.buttonBackgroundColor
-        , Border.shadow
-            { offset = (0.0, 4.0)
-            , size = 0.0
-            , blur = 0.0
-            , color = rgb255 166 43 113
-            }
         , focused
             [
             ]
-        ]
-        { onPress = Just msg
+        , Events.onMouseDown <| toMsg OnMouseDown
+        , Events.onMouseUp <| toMsg OnMouseUp
+        , Events.onMouseLeave <| toMsg OnMouseLeave
+        , Events.onMouseEnter <| toMsg OnMouseEnter
+        ] ++
+            (case (model.isHover, model.state) of
+                (False, Default) ->
+                    [ Border.shadow
+                        { offset = (0.0, 4.0)
+                        , size = 0.0
+                        , blur = 0.0
+                        , color = rgb255 166 43 113
+                        }
+                    ]
+                (True, Default) ->
+                    [ moveDown 4.0
+                    ]
+                (True, Pressed) ->
+                    [ moveDown 4.0
+                    ]
+                (False, Pressed) ->
+                    [ Border.shadow
+                        { offset = (0.0, 4.0)
+                        , size = 0.0
+                        , blur = 0.0
+                        , color = rgb255 166 43 113
+                        }
+                    ]
+            ))
+
+        { onPress = Just model.onPress
         , label = text buttonText
         }
