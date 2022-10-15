@@ -256,7 +256,9 @@ view model =
     Layout.viewLayout
         <|
             { connectWalletButton =
-                ConnectWalletButton.view model.connectWalletButtonModel ConnectWalletButtonSpecific model.walletAddress
+                ConnectWalletButton.view
+                    (ConnectWalletButton.updateWalletAddress model.walletAddress model.connectWalletButtonModel)
+                    ConnectWalletButtonSpecific
             , jumbotron = viewJumbotron
             , gallery = viewGallery emojiList
             , message = model.message

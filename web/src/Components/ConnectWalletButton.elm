@@ -1,4 +1,4 @@
-module Components.ConnectWalletButton exposing (view, init, update, Model, Msg(..))
+module Components.ConnectWalletButton exposing (view, init, updateWalletAddress, update, Model, Msg(..))
 
 import ColorSchemes
 import Element exposing (..)
@@ -21,6 +21,7 @@ type alias Model msg =
     { state : ButtonState
     , isHover : Bool
     , onPress : msg
+    , walletAddress : Maybe Address
     }
 
 
@@ -36,6 +37,14 @@ init msg =
     { state = Default
     , isHover = False
     , onPress = msg
+    , walletAddress = Nothing
+    }
+
+
+updateWalletAddress : Maybe Address -> Model msg -> Model msg
+updateWalletAddress walletAddress model =
+    { model
+    | walletAddress = walletAddress
     }
 
 
@@ -60,11 +69,11 @@ update msg model =
             }
 
 
-view : Model msg -> (Msg -> msg) -> Maybe Address -> Element msg
-view model toMsg walletAddress =
+view : Model msg -> (Msg -> msg) -> Element msg
+view model toMsg =
     let
         buttonText =
-            case walletAddress of
+            case model.walletAddress of
                 Just walletAddr ->
                     let
                         strAddr =
