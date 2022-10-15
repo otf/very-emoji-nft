@@ -23,7 +23,7 @@ viewConnectWalletButton walletAddress msg =
                     in
                     (String.left 6 strAddr) ++ "..." ++ (String.right 4 strAddr)
                 Nothing ->
-                    "ウォレットに接続"
+                    "ウォレットを接続"
     in
     Input.button
         [ padding 12
@@ -31,10 +31,27 @@ viewConnectWalletButton walletAddress msg =
         , Font.center
         , Font.size 16
         , Font.bold
+        , Font.family
+            [ Font.external
+                { name = "DotGothic16"
+                , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
+                }
+            , Font.sansSerif
+            ]
         , Border.width 2
-        , Border.rounded 20
+        , Border.rounded 8
+        , Border.color <| rgb255 166 43 113
         , ColorSchemes.buttonForegroundColor
         , ColorSchemes.buttonBackgroundColor
+        , Border.shadow
+            { offset = (0.0, 4.0)
+            , size = 0.0
+            , blur = 0.0
+            , color = rgb255 166 43 113
+            }
+        , focused
+            [
+            ]
         ]
         { onPress = Just msg
         , label = text buttonText

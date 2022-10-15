@@ -11,11 +11,11 @@ backgroundColor =
 
 
 buttonForegroundColor =
-    Font.color <| rgb255 70 85 150
+    Font.color <| rgb255 255 255 255
 
 
 buttonBackgroundColor =
-    color <| rgb255 206 213 244
+    color <| rgb255 196 73 143
 
 
 jumbotronBackgroundColor =
