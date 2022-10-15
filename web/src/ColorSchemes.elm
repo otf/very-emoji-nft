@@ -31,7 +31,7 @@ emojiForegroundColor =
 
 
 emojiBackgroundColor =
-    color <| rgb255 255 255 255
+    color <| rgb255 240 230 230
 
 
 emojiBorderColor =
@@ -39,7 +39,7 @@ emojiBorderColor =
 
 
 mintButtonForegroundColor =
-    Font.color <| rgb255 255 255 255
+    Font.color <| rgb255 115 115 115
 
 
 mintButtonBorderColor =
@@ -47,7 +47,7 @@ mintButtonBorderColor =
 
 
 mintButtonBackgroundColor =
-    color <| rgb255 255 185 220
+    color <| rgb255 210 170 190
 
 
 headerBackgroundColor =

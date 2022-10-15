@@ -2,7 +2,7 @@ module Components.Emoji exposing (viewEmoji)
 
 import BigInt exposing (BigInt, toString)
 import ColorSchemes
-import Components.MintButton exposing (viewMintButton)
+import Components.MintButton as MintButton exposing (viewMintButton)
 import Config
 import Element exposing (..)
 import Element.Border as Border
@@ -10,6 +10,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 import Eth.Types exposing (Address)
+import Html.Attributes as RawAttrs
 
 
 viewIpfsImage : BigInt -> Element msg
@@ -43,11 +44,10 @@ viewTokenId tokenId =
 viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> (BigInt -> Bool) -> BigInt -> Element msg
 viewEmoji msg walletAddress isMinted isLoading tokenId =
     el
-        [ Border.width 2
-        , Border.rounded 8
-        , ColorSchemes.emojiBackgroundColor
-        , ColorSchemes.emojiBorderColor
+        [ ColorSchemes.emojiBackgroundColor
         , ColorSchemes.emojiForegroundColor
+        , Border.width 3
+        , htmlAttribute <| RawAttrs.style "border-color" "#c0c0c0 #000 #c0c0c0 #000 #c0c0c0"
         , width (fill |> minimum 198)
         ]
         <|
