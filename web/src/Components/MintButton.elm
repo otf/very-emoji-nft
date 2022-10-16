@@ -76,14 +76,14 @@ update msg model =
             }
 
 
-view : Model msg -> Element msg
-view model =
+view : Model msg -> (Msg -> msg) -> Element msg
+view model toMsg =
     let
         canMint =
-            model.walletAddress /= Nothing && not model.isMinted
+            model.walletAddress /= Nothing && not model.isMinted && not model.isMinting
     in
     Input.button
-        [ padding 8
+        ([ padding 8
         , width fill
         , ColorSchemes.mintButtonBackgroundColor
         , ColorSchemes.mintButtonForegroundColor
@@ -95,12 +95,19 @@ view model =
         , Border.width 2
         --, ColorSchemes.mintButtonBorderColor
         , htmlAttribute <| RawAttrs.style "outline" "2px solid #000000"
-        , htmlAttribute <| RawAttrs.style "border-color" "#E6E6E6 #808080 #808080 #E6E6E6"
-        , alpha (if canMint then 1.0 else 0.5)
+        , alpha (if model.walletAddress /= Nothing && not model.isMinted then 1.0 else 0.5)
         , focused []
-        -- , Events.onMouseDown <| toMsg OnMouseDown
-        -- , Events.onMouseUp <| toMsg OnMouseUp
-        ]
+        , Events.onMouseDown <| toMsg OnMouseDown
+        , Events.onMouseUp <| toMsg OnMouseUp
+        , Events.onMouseLeave <| toMsg OnMouseLeave
+        , Events.onMouseEnter <| toMsg OnMouseEnter
+        ] ++
+            (if canMint && model.isHover then
+                [ htmlAttribute <| RawAttrs.style "border-color" "#808080 #E6E6E6 #E6E6E6 #808080" ]
+            else
+                [ htmlAttribute <| RawAttrs.style "border-color" "#E6E6E6 #808080 #808080 #E6E6E6" ]
+            )
+        )
         { onPress = if canMint && not model.isMinting then Just (model.onPress model.tokenId) else Nothing
         , label =
             if model.isMinting then

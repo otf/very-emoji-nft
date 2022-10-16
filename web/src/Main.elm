@@ -70,6 +70,7 @@ type Msg
     | GotMintedTokenIds (Result Http.Error (List BigInt))
     | GotFail String
     | ConnectWalletButtonSpecific ConnectWalletButton.Msg
+    | MintButtonSpecific BigInt MintButton.Msg
 
 
 init : Int -> ( Model, Cmd Msg )
@@ -291,6 +292,20 @@ update msg model =
                 ConnectWalletButton.update subMsg model.connectWalletButtonModel
             }, Cmd.none)
 
+        MintButtonSpecific tokenId subMsg ->
+            ({ model
+            | mintButtonModels =
+                model.mintButtonModels
+                |> List.map
+                    (\mintButtonModel ->
+                        if mintButtonModel.tokenId == tokenId then
+                            mintButtonModel
+                            |> MintButton.update subMsg
+                        else
+                            mintButtonModel
+                    )
+            }, Cmd.none)
+
 
 toProvider : NetworkId -> HttpProvider
 toProvider networkId =
@@ -313,7 +328,7 @@ view model =
     let
         emojiList =
             model.mintButtonModels
-            |> List.map Emoji.view
+            |> List.map (\mintButtonModel -> Emoji.view (MintButtonSpecific mintButtonModel.tokenId) mintButtonModel)
     in
     Layout.toHtml
         <|
