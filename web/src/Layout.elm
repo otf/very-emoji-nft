@@ -158,6 +158,13 @@ viewLayout { connectWalletButton, jumbotron, gallery, message } =
         [ width (fill |> minimum 360)
         , height fill
         , inFront <| header True
+        , Font.family
+            [ Font.external
+                { name = "DotGothic16"
+                , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
+                }
+            , Font.sansSerif
+            ]
         ]
     <|
         column

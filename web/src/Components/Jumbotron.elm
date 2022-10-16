@@ -24,13 +24,6 @@ viewJumbotron wrapContainer =
               <| textColumn 
                   [ width fill
                   , paddingXY 0 80
-                  , Font.family
-                      [ Font.external
-                          { name = "DotGothic16"
-                          , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
-                          }
-                      , Font.sansSerif
-                      ]
                   ]
                   [ paragraph
                       [ Region.heading 2

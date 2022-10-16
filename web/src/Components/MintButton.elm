@@ -49,13 +49,6 @@ viewMintButton msg walletAddress isMinted isLoading =
         , Font.size 24
         , Font.bold
         , Font.color <| rgb255 0 0 0
-        , Font.family
-            [ Font.external
-                { name = "DotGothic16"
-                , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
-                }
-            , Font.sansSerif
-            ]
         , ColorSchemes.mintButtonForegroundColor
         , Border.width 2
         --, ColorSchemes.mintButtonBorderColor

@@ -132,13 +132,6 @@ view model toMsg =
         ([ padding 12
         , width fill
         , Font.size 16
-        , Font.family
-            [ Font.external
-                { name = "DotGothic16"
-                , url = "https://fonts.googleapis.com/css2?family=DotGothic16"
-                }
-            , Font.sansSerif
-            ]
         , Border.width 2
         , Border.rounded 8
         , Border.color <| rgb255 167 43 113
