@@ -15,7 +15,7 @@ buttonForegroundColor =
 
 
 buttonBackgroundColor =
-    color <| rgb255 196 73 143
+    color <| rgb255 221 98 168
 
 
 jumbotronBackgroundColor =
