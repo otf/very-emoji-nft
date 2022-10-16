@@ -43,18 +43,14 @@ type Msg
     | OnMouseLeave
 
 
-init : (BigInt -> msg) -> Maybe Address -> List BigInt -> List BigInt -> BigInt -> Model msg
-init onPress walletAddress mintingTokenIds mintedTokenIds tokenId =
+init : (BigInt -> msg) -> Bool -> Bool -> BigInt -> Model msg
+init onPress isMinting isMinted tokenId =
     { state = Default
     , isHover = False
     , onPress = onPress
-    , walletAddress = walletAddress
-    , isMinting =
-        mintingTokenIds 
-        |> List.any ((==) tokenId)
-    , isMinted =
-        mintedTokenIds 
-        |> List.any ((==) tokenId)
+    , walletAddress = Nothing
+    , isMinting = isMinting
+    , isMinted = isMinted
     , tokenId = tokenId
     }
 

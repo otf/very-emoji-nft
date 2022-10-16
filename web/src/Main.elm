@@ -55,9 +55,8 @@ type alias Model =
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
     , provider : HttpProvider
-    , mintedTokenIds : List BigInt
-    , mintingTokenIds : List BigInt
     , connectWalletButtonModel : ConnectWalletButton.Model Msg
+    , mintButtonModels : List (MintButton.Model Msg)
     }
 
 
@@ -79,15 +78,21 @@ init networkId =
         provider =
             Net.toNetworkId networkId
                 |> toProvider
+
+        zeroToMaxSupply =
+            unfoldr (zeroToUntil Config.maxSupply) (BigInt.fromInt 0)
+
+        mintButtonModels =
+            zeroToMaxSupply
+            |> List.map (MintButton.init Mint False False)
     in
     ( { message = Messages.pleaseConnectWallet
       , txSentry = TxSentry.init ( txOut, txIn ) TxSentryMsg provider
       , contractAddress = Nothing
       , walletAddress = Nothing
       , provider = provider
-      , mintedTokenIds = []
-      , mintingTokenIds = []
       , connectWalletButtonModel = ConnectWalletButton.init ConnectWallet
+      , mintButtonModels = mintButtonModels
       }
     , Task.perform (always FetchContract) (Task.succeed ())
     )
@@ -131,59 +136,125 @@ callContract model callList updateModel =
         Nothing ->
             ( model, Cmd.none )
 
+updateMessage : Maybe String -> Model -> Model
+updateMessage message model =
+    { model
+    | message = message
+    }
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+
+updateMinting : BigInt -> Bool -> Model -> Model
+updateMinting tokenId isMinting model =
+    { model
+    | mintButtonModels =
+        model.mintButtonModels
+        |> List.map
+            (\mintButtonModel ->
+                if mintButtonModel.tokenId == tokenId then
+                    { mintButtonModel
+                    | isMinting = isMinting
+                    }
+                else
+                    mintButtonModel
+            )
+    }
+
+
+updateMinted : BigInt -> Bool -> Model -> Model
+updateMinted tokenId isMinted model =
+    { model
+    | mintButtonModels =
+        model.mintButtonModels
+        |> List.map
+            (\mintButtonModel ->
+                if mintButtonModel.tokenId == tokenId then
+                    { mintButtonModel
+                    | isMinted = isMinted
+                    }
+                else
+                    mintButtonModel
+            )
+    }
+
+
+updateWalletStatus : Maybe Address -> HttpProvider -> Model -> Model
+updateWalletStatus walletAddress provider model =
+    { model
+    | walletAddress = walletAddress
+    , provider = provider
+    , mintButtonModels =
+        model.mintButtonModels
+        |> List.map
+            (\mintButtonModel ->
+                { mintButtonModel
+                | walletAddress = walletAddress
+                }
+            )
+    }
+
+
+updateTxSentry : TxSentry Msg -> Model -> Model
+updateTxSentry txSentry model =
+    { model
+    | txSentry = txSentry
+    }
+
+
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         TxSentryMsg subMsg ->
             let
-                ( subModel, subCmd ) =
+                (subModel, subCmd) =
                     TxSentry.update subMsg model.txSentry
             in
-            ( { model | txSentry = subModel }, subCmd )
+            (model |> updateTxSentry subModel, subCmd)
 
         ConnectWallet ->
-            ( model, connectWallet () )
+            (model, connectWallet ())
 
         FetchContract ->
             case Config.contractAddress of
                 Ok contractAddr ->
-                    ( { model
+                    ({ model
                         | contractAddress = Just contractAddr
-                      }
+                     }
                     , callMintedTokenIds model.provider contractAddr
                     )
 
                 Err detailMessage ->
-                    ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
+                    (model |> updateMessage (Messages.unknownError detailMessage), Cmd.none)
 
         Mint tokenId ->
             case ( model.walletAddress, model.contractAddress ) of
                 ( Just walletAddr, Just contractAddr ) ->
                     let
-                        ( newTxSentry, mintCmd ) =
+                        (newTxSentry, mintCmd) =
                             mint model.txSentry walletAddr contractAddr tokenId
+                        updateModel =
+                            updateTxSentry newTxSentry
+                            >> updateMinting tokenId True
                     in
-                    ( { model | txSentry = newTxSentry, mintingTokenIds = tokenId :: model.mintingTokenIds }, mintCmd )
+                    (model |> updateModel, mintCmd)
 
                 _ ->
-                    ( { model | message = Messages.errorOfFetchContract }, Cmd.none )
+                    (model |> updateMessage Messages.errorOfFetchContract, Cmd.none)
 
         GotMint tokenId (Ok tx) ->
             let
-                updateModel m =
-                    { m
-                    | message = Messages.successOfMint tx.hash
-                    , mintingTokenIds = List.filter ((/=) tokenId) m.mintingTokenIds
-                    }
+                updateModel =
+                    updateMinting tokenId False
+                    >> updateMessage (Messages.successOfMint tx.hash)
             in
             callContract model [ callMintedTokenIds ] updateModel
 
         GotMint tokenId (Err detailMessage) ->
-            ( { model
-                | message = Messages.unknownError detailMessage
-                , mintingTokenIds = List.filter ((/=) tokenId) model.mintingTokenIds
-            }, Cmd.none )
+            let
+                updateModel =
+                    updateMinting tokenId False
+                    >> updateMessage (Messages.unknownError detailMessage)
+            in
+            (model |> updateModel, Cmd.none)
 
         GotWalletStatus walletSentry_ ->
             let
@@ -194,29 +265,25 @@ update msg model =
 
                         Nothing ->
                             Messages.pleaseConnectWallet
+                updateModel =
+                    updateWalletStatus walletSentry_.account (toProvider walletSentry_.networkId)
+                    >> updateMessage message
             in
-            ( { model
-                | walletAddress = walletSentry_.account
-                , provider = toProvider walletSentry_.networkId
-                , message = message
-              }
-            , Cmd.none
-            )
+            (updateModel model, Cmd.none)
 
         GotMintedTokenIds (Ok mintedTokenIds) ->
             let
                 updateModel m =
-                    { m
-                    | mintedTokenIds = mintedTokenIds
-                    }
+                    mintedTokenIds
+                    |> List.foldl (\tokenId aModel -> updateMinted tokenId True aModel) m
             in
             callContract model [] updateModel
 
         GotMintedTokenIds (Err _) ->
-            ( model, Cmd.none )
+            (model, Cmd.none)
 
         GotFail detailMessage ->
-            ( { model | message = Messages.unknownError detailMessage }, Cmd.none )
+            (model |> updateMessage (Messages.unknownError detailMessage), Cmd.none)
 
         ConnectWalletButtonSpecific subMsg ->
             ({ model
@@ -244,15 +311,9 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
-        zeroToMaxSupply =
-            unfoldr (zeroToUntil Config.maxSupply) (BigInt.fromInt 0)
-
-        mkMintButtonModel =
-            MintButton.init Mint model.walletAddress model.mintingTokenIds model.mintedTokenIds
-
         emojiList =
-            zeroToMaxSupply
-            |> List.map (Emoji.view mkMintButtonModel)
+            model.mintButtonModels
+            |> List.map Emoji.view
     in
     Layout.toHtml
         <|

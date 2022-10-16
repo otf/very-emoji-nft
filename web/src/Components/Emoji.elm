@@ -34,8 +34,8 @@ viewTokenId tokenId =
       <|
           text ("Very Emoji " ++ "#" ++ (toString tokenId))
 
-view : (BigInt -> MintButton.Model msg) -> BigInt -> Element msg
-view mkMintModel tokenId =
+view : MintButton.Model msg -> Element msg
+view mintButtonModel =
     el
         [ ColorSchemes.emojiBackgroundColor
         , ColorSchemes.emojiForegroundColor
@@ -50,12 +50,12 @@ view mkMintModel tokenId =
                 , spacing 16
                 , padding 16
                 ]
-                [ viewTokenId tokenId
+                [ viewTokenId mintButtonModel.tokenId
                 , row []
                     [ el [ width <| fillPortion 1 ] Element.none
-                    , el [ width <| fillPortion 6 ] <| viewIpfsImage tokenId
+                    , el [ width <| fillPortion 6 ] <| viewIpfsImage mintButtonModel.tokenId
                     , el [ width <| fillPortion 1 ] Element.none
                     ]
                 , MintButton.view
-                    <| mkMintModel tokenId
+                    <| mintButtonModel
                 ]
