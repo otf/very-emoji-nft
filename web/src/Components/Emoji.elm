@@ -1,8 +1,8 @@
-module Components.Emoji exposing (viewEmoji)
+module Components.Emoji exposing (view)
 
 import BigInt exposing (BigInt, toString)
 import ColorSchemes
-import Components.MintButton as MintButton exposing (viewMintButton)
+import Components.MintButton as MintButton
 import Config
 import Element exposing (..)
 import Element.Border as Border
@@ -34,8 +34,8 @@ viewTokenId tokenId =
       <|
           text ("Very Emoji " ++ "#" ++ (toString tokenId))
 
-viewEmoji : (BigInt -> msg) -> Maybe Address -> (BigInt -> Bool) -> (BigInt -> Bool) -> BigInt -> Element msg
-viewEmoji msg walletAddress isMinted isLoading tokenId =
+view : (BigInt -> MintButton.Model msg) -> BigInt -> Element msg
+view mkMintModel tokenId =
     el
         [ ColorSchemes.emojiBackgroundColor
         , ColorSchemes.emojiForegroundColor
@@ -56,5 +56,6 @@ viewEmoji msg walletAddress isMinted isLoading tokenId =
                     , el [ width <| fillPortion 6 ] <| viewIpfsImage tokenId
                     , el [ width <| fillPortion 1 ] Element.none
                     ]
-                , viewMintButton (msg tokenId) walletAddress (isMinted tokenId) (isLoading tokenId)
+                , MintButton.view
+                    <| mkMintModel tokenId
                 ]

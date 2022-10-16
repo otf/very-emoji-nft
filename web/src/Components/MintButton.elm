@@ -1,4 +1,10 @@
-module Components.MintButton exposing (viewMintButton, init, update, Msg, Model)
+module Components.MintButton exposing
+    ( view
+    , init
+    , update
+    , Msg
+    , Model
+    )
 
 import ColorSchemes
 import Element exposing (..)
@@ -11,34 +17,74 @@ import Element.Events as Events
 import Eth.Types exposing (Address)
 import Eth.Utils exposing (addressToString)
 import Html.Attributes as RawAttrs
+import BigInt exposing (BigInt)
 
-type Model
-    = Normal
+
+type ButtonState
+    = Default
     | Pressed
+
+
+type alias Model msg =
+    { state : ButtonState
+    , isHover : Bool
+    , onPress : BigInt -> msg
+    , walletAddress : Maybe Address
+    , isMinted : Bool
+    , isMinting : Bool
+    , tokenId : BigInt
+    }
+
 
 type Msg
     = OnMouseDown
     | OnMouseUp
+    | OnMouseEnter
+    | OnMouseLeave
 
 
-init : Model
-init =
-    Normal
+init : (BigInt -> msg) -> Maybe Address -> List BigInt -> List BigInt -> BigInt -> Model msg
+init onPress walletAddress mintingTokenIds mintedTokenIds tokenId =
+    { state = Default
+    , isHover = False
+    , onPress = onPress
+    , walletAddress = walletAddress
+    , isMinting =
+        mintingTokenIds 
+        |> List.any ((==) tokenId)
+    , isMinted =
+        mintedTokenIds 
+        |> List.any ((==) tokenId)
+    , tokenId = tokenId
+    }
 
-update : Model -> Msg -> (Model, Cmd Msg)
-update model msg =
+
+update : Msg -> Model msg -> Model msg
+update msg model =
     case msg of
         OnMouseDown ->
-            (Pressed, Cmd.none)
+            { model
+            | state = Pressed
+            }
         OnMouseUp ->
-            (Normal, Cmd.none)
+            { model
+            | state = Default
+            }
+        OnMouseEnter ->
+            { model
+            | isHover = True
+            }
+        OnMouseLeave ->
+            { model
+            | isHover = False
+            }
 
 
-viewMintButton : msg -> Maybe Address -> Bool -> Bool -> Element msg
-viewMintButton msg walletAddress isMinted isLoading =
+view : Model msg -> Element msg
+view model =
     let
         canMint =
-            walletAddress /= Nothing && not isMinted
+            model.walletAddress /= Nothing && not model.isMinted
     in
     Input.button
         [ padding 8
@@ -59,9 +105,9 @@ viewMintButton msg walletAddress isMinted isLoading =
         -- , Events.onMouseDown <| toMsg OnMouseDown
         -- , Events.onMouseUp <| toMsg OnMouseUp
         ]
-        { onPress = if canMint && not isLoading then Just msg else Nothing
+        { onPress = if canMint && not model.isMinting then Just (model.onPress model.tokenId) else Nothing
         , label =
-            if isLoading then
+            if model.isMinting then
                 image [] { src = "images/rolling.gif", description = "minting..." }
             else
                 text "ミント"

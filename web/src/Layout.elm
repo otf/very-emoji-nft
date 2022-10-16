@@ -1,4 +1,4 @@
-module Layout exposing (viewLayout, Layout)
+module Layout exposing (toHtml, Layout)
 
 import ColorSchemes
 import Config
@@ -149,8 +149,8 @@ type alias Layout msg =
     , message : Maybe String
     }
 
-viewLayout : Layout msg -> Html msg
-viewLayout { connectWalletButton, jumbotron, gallery, message } =
+toHtml : Layout msg -> Html msg
+toHtml { connectWalletButton, jumbotron, gallery, message } =
     let
         header = viewHeader (container []) connectWalletButton message
     in

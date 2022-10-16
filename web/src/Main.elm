@@ -5,7 +5,9 @@ import Browser
 import Components.ConnectWalletButton as ConnectWalletButton
 import Components.Jumbotron exposing (viewJumbotron)
 import Components.Gallery exposing (viewGallery)
-import Components.Emoji exposing (viewEmoji)
+import Components.Emoji as Emoji
+import Components.MintButton as MintButton
+import Layout
 import Contracts.VeryEmoji as VeryEmoji exposing (mint)
 import Element exposing (..)
 import Element.Input as Input
@@ -19,7 +21,6 @@ import Eth.Utils as EthUtils
 import Html exposing (Html)
 import Http as Http exposing (Error)
 import Json.Decode as Decode exposing (Value)
-import Layout
 import Messages
 import Config
 import Task as Task exposing (attempt, perform)
@@ -243,17 +244,17 @@ toProvider networkId =
 view : Model -> Html Msg
 view model =
     let
-        emojiList =
+        zeroToMaxSupply =
             unfoldr (zeroToUntil Config.maxSupply) (BigInt.fromInt 0)
-            |> List.map (
-                viewEmoji
-                    Mint
-                    model.walletAddress
-                    (\tokenId -> List.any ((==) tokenId) model.mintedTokenIds)
-                    (\tokenId -> List.any ((==) tokenId) model.mintingTokenIds)
-                )
+
+        mkMintButtonModel =
+            MintButton.init Mint model.walletAddress model.mintingTokenIds model.mintedTokenIds
+
+        emojiList =
+            zeroToMaxSupply
+            |> List.map (Emoji.view mkMintButtonModel)
     in
-    Layout.viewLayout
+    Layout.toHtml
         <|
             { connectWalletButton =
                 ConnectWalletButton.view
