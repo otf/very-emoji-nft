@@ -11,7 +11,7 @@ maxSupply =
 
 rawContractAddress : String
 rawContractAddress =
-    "0xE94215Ee7e25a1aCB58a9D5406db930ee729700b"
+    "0x4bb1cbAd0e7535CF31393e5bD7141F63D8EF2F05"
 
 contractAddress : Result String Address
 contractAddress =
