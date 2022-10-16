@@ -1,22 +1,38 @@
 'use strict';
 
 // Tx Sentry - Send and listen to transactions form elm to web3 provider
-export function txSentry(fromElm, toElm, web3) {
-    checkFromElmPort(fromElm);
-    checkToElmPort(toElm);
+export function txSentry(txFromElm, txToElm, callFromElm, callToElm, web3) {
+    checkFromElmPort(txFromElm);
+    checkToElmPort(txToElm);
+    checkFromElmPort(callFromElm);
+    checkToElmPort(callToElm);
     checkWeb3(web3);
 
-    fromElm.subscribe(function (txData) {
+    txFromElm.subscribe(function (txData) {
         try {
             web3.request({
               method: 'eth_sendTransaction',
               params: [ txData.txParams ]
             }).then(function (e, r) {
-                toElm.send({ ref: txData.ref, txHash: r || e });
+                txToElm.send({ ref: txData.ref, txHash: r || e });
             });
         } catch (error) {
             console.log(error);
-            toElm.send({ ref: txData.ref, txHash: null });
+            txToElm.send({ ref: txData.ref, txHash: null });
+        }
+    });
+
+    callFromElm.subscribe(function (callData) {
+        try {
+            web3.request({
+              method: 'eth_call',
+              params: [ callData.params, "latest" ]
+            }).then(function (e, r) {
+                callToElm.send({ data : r || e });
+            });
+        } catch (error) {
+            console.log(error);
+            callToElm.send({ error: error });
         }
     });
 }

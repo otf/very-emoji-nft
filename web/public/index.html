@@ -39,7 +39,7 @@
               flags: parseInt(networkId),
               node: document.getElementById('app')
             });
-            txSentry(app.ports.txOut, app.ports.txIn, ethereum);
+            txSentry(app.ports.txOut, app.ports.txIn, app.ports.callOut, app.ports.callIn, ethereum);
             walletSentry(app.ports.walletSentry, ethereum);
             app.ports.connectWallet.subscribe(function (){
               ethereum.request({ method: 'eth_requestAccounts' });

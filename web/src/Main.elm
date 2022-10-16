@@ -18,9 +18,12 @@ import Eth.Sentry.Tx as TxSentry exposing (TxSentry)
 import Eth.Sentry.Wallet as WalletSentry exposing (WalletSentry)
 import Eth.Types exposing (..)
 import Eth.Utils as EthUtils
+import Eth.Encode as EthEncode
+import Eth.Abi.Decode as EthAbiDecode
 import Html exposing (Html)
 import Http as Http exposing (Error)
-import Json.Decode as Decode exposing (Value)
+import Json.Encode as Encode
+import Json.Decode as Decode exposing (Value, Decoder)
 import Messages
 import Config
 import Task as Task exposing (attempt, perform)
@@ -28,7 +31,65 @@ import List.Extra exposing (unfoldr)
 import Time
 
 
+encodeCallData : Value -> Value
+encodeCallData params =
+    Encode.object
+        [ ( "params", params )
+        ]
+
+encodeCall : Call a -> Value
+encodeCall callData =
+    EthEncode.listOfMaybesToVal
+        [ ( "to", Maybe.map EthEncode.address callData.to )
+        , ( "from", Maybe.map EthEncode.address callData.from )
+        , ( "gas", Maybe.map EthEncode.hexInt callData.gas )
+        , ( "gasPrice", Maybe.map EthEncode.bigInt callData.gasPrice )
+        , ( "value", Maybe.map EthEncode.bigInt callData.value )
+        , ( "data", Maybe.map EthEncode.hex callData.data )
+        , ( "nonce", Maybe.map EthEncode.hexInt callData.nonce )
+        ]
+
+ethCall : (Result String a -> msg) -> Call a -> Cmd msg
+ethCall tagger params =
+    let
+        paramsVal =
+            encodeCall params
+    in
+    callOut (encodeCallData paramsVal)
+
+mintedTokenIdsResponseDecoder : Decoder (List BigInt)
+mintedTokenIdsResponseDecoder =
+    Decode.field "data"
+        <| EthAbiDecode.toElmDecoder (EthAbiDecode.dynamicArray EthAbiDecode.uint)
+    -- todo
+
+errorDecoder : Decoder String
+errorDecoder =
+    Decode.field "error" Decode.string
+
+decodeCallData : Decoder a -> Value -> Result String a
+decodeCallData decoder val =
+    case Decode.decodeValue decoder val of
+        Ok result ->
+            Ok result
+        Err _ ->
+            case Decode.decodeValue errorDecoder val of
+                Ok error ->
+                    (Err <| "Problem call. error message is:" ++ error)
+                Err error2 ->
+                    Err "Error decoding call data(error object)"
+
+listenCall : (Result String a -> msg) -> Decoder a -> Sub msg
+listenCall tagger decoder =
+    Sub.map tagger (callIn (decodeCallData decoder))
+
 port walletSentry : (Decode.Value -> msg) -> Sub msg
+
+
+port callOut : Decode.Value -> Cmd msg
+
+
+port callIn : (Decode.Value -> msg) -> Sub msg
 
 
 port txOut : Decode.Value -> Cmd msg
@@ -45,6 +106,7 @@ subscriptions model =
     Sub.batch
         [ walletSentry (WalletSentry.decodeToMsg GotFail GotWalletStatus)
         , TxSentry.listen model.txSentry
+        , listenCall GotMintedTokenIds mintedTokenIdsResponseDecoder
         , Time.every 1000 (always FetchContract)
         ]
 
@@ -67,7 +129,7 @@ type Msg
     | Mint BigInt
     | GotMint BigInt (Result String Tx)
     | GotWalletStatus WalletSentry
-    | GotMintedTokenIds (Result Http.Error (List BigInt))
+    | GotMintedTokenIds (Result String (List BigInt))
     | GotFail String
     | ConnectWalletButtonSpecific ConnectWalletButton.Msg
     | MintButtonSpecific BigInt MintButton.Msg
@@ -105,15 +167,10 @@ mint sentry from contract tokenId =
         |> Eth.toSend
         |> TxSentry.send (GotMint tokenId) sentry
 
-
-type alias Call =
-    HttpProvider -> Address -> Cmd Msg
-
-callMintedTokenIds : Call
-callMintedTokenIds provider contract =
+callMintedTokenIds : Address -> Cmd Msg
+callMintedTokenIds contract =
     VeryEmoji.mintedTokenIds contract
-        |> Eth.call provider
-        |> Task.attempt GotMintedTokenIds
+        |> ethCall GotMintedTokenIds
 
 zeroToUntil : BigInt -> BigInt -> Maybe (BigInt, BigInt)
 zeroToUntil max n =
@@ -121,21 +178,6 @@ zeroToUntil max n =
         Just (n, BigInt.add n (BigInt.fromInt 1))
     else
         Nothing
-
-callContract : Model -> List Call -> ( Model -> Model ) -> ( Model, Cmd Msg )
-callContract model callList updateModel =
-    case model.contractAddress of
-        Just contractAddr ->
-            let
-                batch =
-                    callList
-                    |> List.map (\call -> call model.provider contractAddr)
-                    |> Cmd.batch
-            in
-            ( updateModel model, batch )
-
-        Nothing ->
-            ( model, Cmd.none )
 
 updateMessage : Maybe (Element Msg) -> Model -> Model
 updateMessage message model =
@@ -201,6 +243,13 @@ updateTxSentry txSentry model =
     }
 
 
+updateContractAddress : Maybe Address -> Model -> Model
+updateContractAddress contractAddress model =
+    { model
+    | contractAddress = contractAddress
+    }
+
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
@@ -220,7 +269,7 @@ update msg model =
                     ({ model
                         | contractAddress = Just contractAddr
                      }
-                    , callMintedTokenIds model.provider contractAddr
+                    , callMintedTokenIds contractAddr
                     )
 
                 Err detailMessage ->
@@ -242,12 +291,20 @@ update msg model =
                     (model |> updateMessage Messages.errorOfFetchContract, Cmd.none)
 
         GotMint tokenId (Ok tx) ->
-            let
-                updateModel =
-                    updateMinting tokenId False
-                    >> updateMessage (Messages.successOfMint tx.hash)
-            in
-            callContract model [ callMintedTokenIds ] updateModel
+            case Config.contractAddress of
+                Ok contractAddr ->
+                    let
+                        updateModel =
+                            updateMinting tokenId False
+                            >> updateMessage (Messages.successOfMint tx.hash)
+                            >> updateContractAddress (Just contractAddr)
+                    in
+                    (model |> updateModel
+                    , callMintedTokenIds contractAddr
+                    )
+
+                Err detailMessage ->
+                    (model |> updateMessage (Messages.unknownError detailMessage), Cmd.none)
 
         GotMint tokenId (Err detailMessage) ->
             let
@@ -270,7 +327,7 @@ update msg model =
                     updateWalletStatus walletSentry_.account (toProvider walletSentry_.networkId)
                     >> updateMessage message
             in
-            (updateModel model, Cmd.none)
+            (model |> updateModel, Cmd.none)
 
         GotMintedTokenIds (Ok mintedTokenIds) ->
             let
@@ -278,7 +335,7 @@ update msg model =
                     mintedTokenIds
                     |> List.foldl (\tokenId aModel -> updateMinted tokenId True aModel) m
             in
-            callContract model [] updateModel
+            (model |> updateModel, Cmd.none)
 
         GotMintedTokenIds (Err _) ->
             (model, Cmd.none)
