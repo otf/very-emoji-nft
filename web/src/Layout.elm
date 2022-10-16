@@ -63,10 +63,10 @@ viewLogo attrs enabled =
         }
 
 
-viewNotificationBar : Maybe String -> Element msg
+viewNotificationBar : Maybe (Element msg) -> Element msg
 viewNotificationBar message =
     case message of
-        Just strMessage ->
+        Just elMessage ->
           el
              [ width shrink
              , padding 16
@@ -79,11 +79,11 @@ viewNotificationBar message =
              , Border.color (rgb255 115 115 115)
              , Border.width 3
              ]
-             <| paragraph [] [text strMessage]
+             <| paragraph [] [elMessage]
         Nothing ->
               Element.none
 
-viewHeader : (Element msg -> Element msg) -> Element msg -> Maybe String -> Bool -> Element msg
+viewHeader : (Element msg -> Element msg) -> Element msg -> Maybe (Element msg) -> Bool -> Element msg
 viewHeader wrapContainer connectWalletButton message enabled =
     column
         [ width fill
@@ -146,7 +146,7 @@ type alias Layout msg =
     { connectWalletButton : Element msg
     , jumbotron : (Element msg -> Element msg) -> Element msg
     , gallery : (Element msg -> Element msg) -> Element msg
-    , message : Maybe String
+    , message : Maybe (Element msg)
     }
 
 toHtml : Layout msg -> Html msg

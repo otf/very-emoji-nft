@@ -50,7 +50,7 @@ subscriptions model =
 
 
 type alias Model =
-    { message : Maybe String
+    { message : Maybe (Element Msg)
     , txSentry : TxSentry Msg
     , contractAddress : Maybe Address
     , walletAddress : Maybe Address
@@ -137,7 +137,7 @@ callContract model callList updateModel =
         Nothing ->
             ( model, Cmd.none )
 
-updateMessage : Maybe String -> Model -> Model
+updateMessage : Maybe (Element Msg) -> Model -> Model
 updateMessage message model =
     { model
     | message = message

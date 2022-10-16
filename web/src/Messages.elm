@@ -1,5 +1,7 @@
 module Messages exposing (..)
 
+import Element exposing (..)
+import Element.Font as Font
 import Eth.Types exposing (TxHash)
 import Eth.Utils exposing (txHashToString)
 
@@ -8,24 +10,35 @@ sorry =
     "⚠️ なにか問題があるようです。ご迷惑をおかけして申し訳ございません。"
         ++ "@sizuku_eth までご連絡ください。"
 
-pleaseConnectWallet : Maybe String
+pleaseConnectWallet : Maybe (Element msg)
 pleaseConnectWallet =
-    Just "⚠️ ウォレットを接続してください。"
+    Just <| text "⚠️ ウォレットを接続してください。"
 
-errorOfFetchContract : Maybe String
+errorOfFetchContract : Maybe (Element msg)
 errorOfFetchContract =
     Just 
-        <| sorry
-        ++ "詳細なエラーメッセージ(コントラクトの取得に失敗しました)"
+        <| text (sorry
+            ++ "詳細なエラーメッセージ(コントラクトの取得に失敗しました)")
 
-successOfMint : TxHash -> Maybe String
+successOfMint : TxHash -> Maybe (Element msg)
 successOfMint txHash =
-    Just <| "✨ ミントに成功しました: " ++ (txHashToString txHash)
+    let
+        strHash =
+            txHashToString txHash
+    in
+    Just <|
+        paragraph []
+            [ text "✨ ミントに成功しました: "
+            , newTabLink [ Font.italic, Font.underline ]
+                { url = "https://etherscan.io/tx/" ++ strHash
+                , label = text "ブロックチェーンエクスプローラーで確認する"
+                }
+            ]
 
-unknownError : String -> Maybe String
+unknownError : String -> Maybe (Element msg)
 unknownError innerMessage =
     Just
-        <| sorry
-        ++ "詳細なエラーメッセージ("
-        ++ innerMessage
-        ++ ")"
+        <| text (sorry
+            ++ "詳細なエラーメッセージ("
+            ++ innerMessage
+            ++ ")")
