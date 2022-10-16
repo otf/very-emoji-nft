@@ -82,9 +82,9 @@ viewLed on =
           , Border.rounded 32
           ]
           <| el
-              [ width <| px 24
-              , height <| px 24
-              , Border.width 2
+              [ width <| px 16
+              , height <| px 16
+              , Border.width 1
               , Border.rounded 32
               , Border.color <| rgb255 60 60 60
               , Background.color <| rgb255 0 161 75
@@ -102,9 +102,9 @@ viewLed on =
           , Border.rounded 32
           ]
           <| el
-              [ width <| px 24
-              , height <| px 24
-              , Border.width 2
+              [ width <| px 16
+              , height <| px 16
+              , Border.width 1
               , Border.rounded 32
               , Border.color <| rgb255 60 60 60
               , Background.color <| rgb255 237 28 36
