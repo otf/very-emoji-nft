@@ -57,6 +57,17 @@ ethCall tagger params =
     in
     callOut (encodeCallData paramsVal)
 
+
+ethSend : (Result String TxHash -> msg) -> TxSentry msg -> Send -> ( TxSentry msg, Cmd msg )
+ethSend tagger sentry txParams =
+    TxSentry.customSend
+        sentry
+        { onSign = Just tagger
+        , onBroadcast = Nothing
+        , onMined = Nothing
+        }
+        txParams
+
 mintedTokenIdsResponseDecoder : Decoder (List BigInt)
 mintedTokenIdsResponseDecoder =
     Decode.field "data"
@@ -127,7 +138,7 @@ type Msg
     | ConnectWallet
     | FetchContract
     | Mint BigInt
-    | GotMint BigInt (Result String Tx)
+    | GotMint BigInt (Result String TxHash)
     | GotWalletStatus WalletSentry
     | GotMintedTokenIds (Result String (List BigInt))
     | GotFail String
@@ -165,7 +176,7 @@ mint : TxSentry Msg -> Address -> Address -> BigInt -> ( TxSentry Msg, Cmd Msg )
 mint sentry from contract tokenId =
     VeryEmoji.mint from contract tokenId
         |> Eth.toSend
-        |> TxSentry.send (GotMint tokenId) sentry
+        |> ethSend (GotMint tokenId) sentry
 
 callMintedTokenIds : Address -> Cmd Msg
 callMintedTokenIds contract =
@@ -290,13 +301,13 @@ update msg model =
                 _ ->
                     (model |> updateMessage Messages.errorOfFetchContract, Cmd.none)
 
-        GotMint tokenId (Ok tx) ->
+        GotMint tokenId (Ok txHash) ->
             case Config.contractAddress of
                 Ok contractAddr ->
                     let
                         updateModel =
                             updateMinting tokenId False
-                            >> updateMessage (Messages.successOfMint tx.hash)
+                            >> updateMessage (Messages.successOfMint txHash)
                             >> updateContractAddress (Just contractAddr)
                     in
                     (model |> updateModel
