@@ -68,9 +68,9 @@ viewNotificationBar message =
     case message of
         Just strMessage ->
           el
-             [ width fill
+             [ width shrink
              , padding 16
-             , centerX
+             , alignLeft
              , color (rgb255 250 250 250)
              , Font.color (rgb255 115 115 115)
              , Font.bold
