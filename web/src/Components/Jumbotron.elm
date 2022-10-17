@@ -57,6 +57,11 @@ viewJumbotron wrapContainer =
                       [ text "* ミント代はかからないけど、ガス代は必要だよ。ウォレットにイーサ(ETH)を入れておいてね。"
                       ]
                   , paragraph [ Font.size 16 ]
+                      [ text "* ミントしたNFTを鑑賞するときは、"
+                      , newTabLink [ Font.underline ] { url = "https://rarible.com", label = text "Rarible" }
+                      , text "を使ってね。モバイル版メタマスクとOpenSeaには対応してないよ。"
+                      ]
+                  , paragraph [ Font.size 16 ]
                       [ text "* 予告なく公開を終了するかも。ずっと鑑賞したい人は、自分でIPFSにPinしてね。"
                       ]
                   , paragraph [ Font.size 16 ]
