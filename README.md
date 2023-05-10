@@ -1,1 +1,2 @@
-# The Very Emoji is an experimental project of sizuku.eth. 
+# The Very Emoji
+This project is an experimental project of @sizuku_eth
